@@ -25,7 +25,6 @@ A Discord bot made in Python using discord.py.
 |---|---|---|
 |setprefix|Set prefix for commands|Max 2 characters|
 |setname|Set the bots nickname||
-|setgame|Set the bots playing status message||
 |setavatar|Set the bots avatar||
 ### Search
 |Command|Description|Sub commands/Notes|

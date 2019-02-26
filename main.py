@@ -44,6 +44,9 @@ async def on_ready():
     print(bot.user.name + " has started!")
     print("--------------------")
 
+    #Set the bots playing message to show use of the prefix
+    await bot.change_presence(game=discord.Game(name="{}help".format(prefsDict["commandPrefix"])))
+
     #Try to load the cogs and note if they are successfully loaded or not
     for cog in cogsList:
         try:

@@ -28,6 +28,8 @@ class admin:
                 with open("prefs.json", "w") as fp:
                     json.dump(prefsDict, fp, indent=4)
                 await self.bot.say("Prefix was set as {}".format(prefsDict["commandPrefix"]))
+                #Set the playing message to use the new prefix
+                await self.bot.change_presence(game=discord.Game(name="{}help".format(prefsDict["commandPrefix"])))
             except Exception as ex:
                 await self.bot.say(str(ex))
 
@@ -41,16 +43,6 @@ class admin:
         else:
             name = t[1]
             await self.bot.change_nickname(ctx.message.server.me, name)
-
-    @commands.command(pass_context=True)
-    @commands.has_any_role("Admin")
-    async def setgame(self, ctx):
-        """Set the bots playing status message"""
-        t = ctx.message.content.split(" ", 1)
-        if len(t) == 1:
-            await self.bot.change_presence(game=discord.Game(name=None))
-        else:
-            await self.bot.change_presence(game=discord.Game(name=t[1]))
 
     @commands.command(pass_context=True)
     @commands.has_any_role("Admin")
