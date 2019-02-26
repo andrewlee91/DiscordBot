@@ -1,7 +1,6 @@
 import discord
 from discord.ext import commands
 import json
-import urllib
 import aiohttp
 import os
 
@@ -39,11 +38,9 @@ class admin:
         t = ctx.message.content.split(" ", 1)
         if len(t) == 1:
             await self.bot.change_nickname(ctx.message.server.me, None)
-            await self.bot.say("Name set to default")
         else:
             name = t[1]
             await self.bot.change_nickname(ctx.message.server.me, name)
-            await self.bot.say("Name set to {}".format(t[1]))
 
     @commands.command(pass_context=True)
     @commands.has_any_role("Admin")
@@ -51,29 +48,31 @@ class admin:
         """Set the bots playing status message"""
         t = ctx.message.content.split(" ", 1)
         if len(t) == 1:
-            await self.bot.change_nickname(ctx.message.server.me, None)
-            await self.bot.say("Name set to default")
+            await self.bot.change_presence(game=discord.Game(name=None))
         else:
-            game = t[1]
-            await self.bot.change_presence(game=discord.Game(name=game))
-            await self.bot.say("Game set to {}".format(str(game)))
+            await self.bot.change_presence(game=discord.Game(name=t[1]))
 
     @commands.command(pass_context=True)
     @commands.has_any_role("Admin")
+    @commands.cooldown(1, 60, commands.BucketType.default)
     async def setavatar(self, ctx):
         """Set the bots avatar"""
         t = ctx.message.content.split(" ", 1)
         if len(t) == 1:
-            await self.bot.say("Name set to default")
+            await self.bot.say("Please use a valid image link! It must be .jpg or .png")
         else:
-            link = t[1]
-            async with aiohttp.get(link) as img:
-                with open("avatar.png", "wb") as f:
-                    f.write(await img.read())
-            with open("avatar.png", "rb") as f:
-                await self.bot.edit_profile(avatar=f.read())
-            os.remove("avatar.png")
-            await self.bot.say("New avatar set!")
+            try:
+                link = t[1]
+                async with aiohttp.get(link) as img:
+                    with open("avatar.png", "wb") as f:
+                        f.write(await img.read())
+                with open("avatar.png", "rb") as f:
+                    await self.bot.edit_profile(avatar=f.read())
+                os.remove("avatar.png")
+                await self.bot.say("New avatar set!")
+            except Exception as e:
+                await self.bot.say(str(e))
 
 def setup(bot):
     bot.add_cog(admin(bot))
+    

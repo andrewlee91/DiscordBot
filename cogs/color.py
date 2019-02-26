@@ -27,6 +27,7 @@ class color:
         self.bot = bot
 
     @commands.command(pass_context=True)
+    @commands.cooldown(1, 30, commands.BucketType.user)
     async def color(self, ctx):
         """Change your color"""
         colorSelection = ctx.message.content.split(" ", 1)

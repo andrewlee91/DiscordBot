@@ -119,7 +119,6 @@ class basic:
             await self.bot.say("You must ask a question!")
         else:
             r = random.randint(1, 20)
-            #I wasnt sure if using a dictionary gives better performance than a long if/elif but it looks a lot nicer
             await self.bot.say("**{}** :8ball:".format(eightballDict(r)))
 
 def eightballDict(x):

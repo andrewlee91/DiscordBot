@@ -19,7 +19,7 @@ A Discord bot made in Python using discord.py.
 ### Colors
 |Command|Description|Sub commands/Notes|
 |---|---|---|
-|color|Commands for setting your own color|If no color is specified it will remove all color roles|
+|color|Commands for setting your own color|If no color is specified it will remove all color roles. 30 second cooldown|
 ### Admin
 |Command|Description|Sub commands/Notes|
 |---|---|---|
@@ -27,3 +27,10 @@ A Discord bot made in Python using discord.py.
 |setname|Set the bots nickname||
 |setgame|Set the bots playing status message||
 |setavatar|Set the bots avatar||
+### Search
+|Command|Description|Sub commands/Notes|
+|---|---|---|
+|setprefix|Set prefix for commands|Max 2 characters|
+|setname|Set the bots nickname||
+|setgame|Set the bots playing status message||
+|setavatar|Set the bots avatar|60 second cooldown|

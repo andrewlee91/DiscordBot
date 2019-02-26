@@ -7,9 +7,7 @@ import json
 try:
     prefsDict = json.load(open("prefs.json"))
 except Exception as ex:
-    prefsDict = {
-        "commandPrefix": "!"
-    }
+    prefsDict = { "commandPrefix": "f!" }
     with open("prefs.json", "w") as outfile:
         json.dump(prefsDict, outfile)
 
@@ -34,7 +32,8 @@ bot = commands.Bot(command_prefix=prefsDict["commandPrefix"], description="A Dis
 cogsList = {
     "basic",
     "color",
-    "admin"
+    "admin",
+    "search"
     }
 
 cogsStatus = {}
@@ -51,7 +50,6 @@ async def on_ready():
             bot.load_extension("cogs." + cog)
             cogsStatus[cog] = "Online"
         except Exception as e:
-            print("Error loading " + cog + "\n" + str(e))
             cogsStatus[cog] = "*Offline*"
 
 @bot.event
@@ -90,7 +88,7 @@ async def load(cog):
         cogsStatus[cog] = "Online"
         await bot.say(cog + " loaded :thumbsup:")
     except (AttributeError, ImportError) as e:
-        await bot.say("```py\n{}: {}\n```".format(type(e).__name__, str(e)))
+        await bot.say(str(e))
 
 @bot.command(hidden=True)
 @commands.has_any_role("Admin")
@@ -101,6 +99,11 @@ async def unload(cog):
         cogsStatus[cog] = "*Offline*"
         await bot.say(cog + " unloaded :thumbsdown:")
     except (AttributeError, ImportError) as e:
-        await bot.say("```py\n{}: {}\n```".format(type(e).__name__, str(e)))
+        await bot.say(str(e))
+
+@bot.event
+async def on_command_error(error, ctx):
+        if isinstance(error, commands.CommandOnCooldown):
+            await bot.send_message(ctx.message.channel, content="This command is on cooldown. Try again in {0:.2f}s.".format(error.retry_after))
 
 bot.run(secretsDict["token"])
