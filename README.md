@@ -30,7 +30,7 @@ A Discord bot made in Python using discord.py.
 ### Search
 |Command|Description|Sub commands/Notes|
 |---|---|---|
-|setprefix|Set prefix for commands|Max 2 characters|
-|setname|Set the bots nickname||
-|setgame|Set the bots playing status message||
-|setavatar|Set the bots avatar|60 second cooldown|
+|osu|Get your Osu!standard stats||
+|taiko|Get your Osu!taiko! stats||
+|ctb|Get your Osu!Catch the Beat! stats||
+|mania|Get your Osu!Mania! stats||
