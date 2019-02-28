@@ -13,6 +13,7 @@ A Discord bot made in Python using discord.py.
 |choose|Choose between options (seperated by commas)||
 |eightball|Ask the eightball a question||
 |flip|Flip a coin||
+|help|A list of the bots commands||
 |roll|Roll the dice (d6 default)|d4, d6, d8, d10, d12, d20|
 |rps|Play rock-paper-scissors||
 |say|Make the bot say something||
@@ -25,7 +26,7 @@ A Discord bot made in Python using discord.py.
 |---|---|---|
 |setprefix|Set prefix for commands|Max 2 characters|
 |setname|Set the bots nickname||
-|setavatar|Set the bots avatar||
+|setavatar|Set the bots avatar|60 second cooldown|
 ### Search
 |Command|Description|Sub commands/Notes|
 |---|---|---|
