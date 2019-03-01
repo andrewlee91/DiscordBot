@@ -1,0 +1,99 @@
+import discord
+from discord.ext import commands
+
+class help:
+    """Cog for the help command"""
+
+    def __init__(self, bot):
+        self.bot = bot
+
+    @commands.group(pass_context=True)
+    async def help(self, ctx):
+        """Help command"""
+        if ctx.invoked_subcommand is None:
+            embedMessage = discord.Embed(
+                title="To view the commands in each group type {}help <group>.".format(self.bot.command_prefix),
+                colour=0x87ceeb)
+            embedMessage.set_author(name="{}'s commands!".format(self.bot.user.name), icon_url=self.bot.user.avatar_url)
+
+            embedMessage.add_field(name="Basic", value="Basic commands", inline=True)
+            embedMessage.add_field(name="Color", value="Set your own color", inline=True)
+            embedMessage.add_field(name="Search", value="Search various websites", inline=True)
+            embedMessage.add_field(name="Admin", value="Admin only!", inline=True)
+
+            embedMessage.set_footer(text="https://github.com/andrewlee91/DiscordBot")
+
+            await self.bot.send_message(ctx.message.channel, embed=embedMessage)
+
+    @help.command(pass_context=True)
+    async def basic(self, ctx):
+        """Basic subcommand"""
+        embedMessage = discord.Embed(
+            title="All commands use the {} prefix.".format(self.bot.command_prefix),
+            colour=0x87ceeb)
+        embedMessage.set_author(name="{}'s commands!".format(self.bot.user.name), icon_url=self.bot.user.avatar_url)
+
+        embedMessage.add_field(name="avatar", value="Post yours or mentioned users avatar", inline=False)
+        embedMessage.add_field(name="choose", value="Choose between options (seperated by commas)", inline=False)
+        embedMessage.add_field(name="eightball", value="Ask the eightball a question", inline=False)
+        embedMessage.add_field(name="flip", value="Flip a coin", inline=False)
+        embedMessage.add_field(name="roll", value="d4, d6, d8, d10, d12, d20", inline=False)
+        embedMessage.add_field(name="rps", value="rock, paper, scissors>", inline=False)
+        embedMessage.add_field(name="say", value="Make the bot say something", inline=False)
+
+        embedMessage.set_footer(text="{}help to see all command groups".format(self.bot.command_prefix))
+
+        await self.bot.send_message(ctx.message.channel, embed=embedMessage)
+
+    @help.command(pass_context=True)
+    async def color(self, ctx):
+        """Color subcommand"""
+        embedMessage = discord.Embed(
+            title="All commands use the {} prefix.".format(self.bot.command_prefix),
+            colour=0x87ceeb)
+        embedMessage.set_author(name="{}'s commands!".format(self.bot.user.name), icon_url=self.bot.user.avatar_url)
+
+        embedMessage.add_field(name="color", value="teal, dark_teal, green, dark_green, blue, dark_blue, purple, dark_purple, magenta, dark_magenta, gold, dark_gold, orange, dark_orange, red, dark_red", inline=False)
+
+        embedMessage.set_footer(text="{}help to see all command groups".format(self.bot.command_prefix))
+
+        await self.bot.send_message(ctx.message.channel, embed=embedMessage)
+
+    @help.command(pass_context=True)
+    async def admin(self, ctx):
+        """Admin subcommand"""
+        embedMessage = discord.Embed(
+            title="All commands use the {} prefix.".format(self.bot.command_prefix),
+            colour=0x87ceeb)
+        embedMessage.set_author(name="{}'s commands!".format(self.bot.user.name), icon_url=self.bot.user.avatar_url)
+
+        embedMessage.add_field(name="setprefix", value="2 characters max.", inline=False)
+        embedMessage.add_field(name="setname", value="Leave blank to reset to original name.", inline=False)
+        embedMessage.add_field(name="setavatar", value="Must be .jpg or .png url. 60 second cooldown.", inline=False)
+
+        embedMessage.set_footer(text="{}help to see all command groups".format(self.bot.command_prefix))
+
+        await self.bot.send_message(ctx.message.channel, embed=embedMessage)
+
+    @help.command(pass_context=True)
+    async def search(self, ctx):
+        """Search subcommand"""
+        embedMessage = discord.Embed(
+            title="All commands use the {} prefix.".format(self.bot.command_prefix),
+            colour=0x87ceeb)
+        embedMessage.set_author(name="{}'s commands!".format(self.bot.user.name), icon_url=self.bot.user.avatar_url)
+
+        embedMessage.add_field(name="osu", value="Get your Osu! stats based on username", inline=False)
+        embedMessage.add_field(name="taiko", value="Get your Osu!taiko! stats based on username", inline=False)
+        embedMessage.add_field(name="ctb", value="Get your Osu!Catch the Beat! stats based on username", inline=False)
+        embedMessage.add_field(name="mania", value="Get your Osu!Mania! stats based on username", inline=False)
+
+        embedMessage.set_footer(text="{}help to see all command groups".format(self.bot.command_prefix))
+
+        await self.bot.send_message(ctx.message.channel, embed=embedMessage)
+
+
+
+
+def setup(bot):
+    bot.add_cog(help(bot))
