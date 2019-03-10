@@ -8,23 +8,11 @@ import os
 try:
     prefsDict = json.load(open("prefs.json"))
 except Exception as ex:
-    prefsDict = { "commandPrefix": "f!" }
+    prefsDict = { 
+        "commandPrefix": "f!"
+        }
     with open("prefs.json", "w") as outfile:
         json.dump(prefsDict, outfile)
-
-#secrets.json is used to store any api keys or information that shouldn't be publicly available
-try:
-    secretsDict = json.load(open("secrets.json"))
-    if (secretsDict["token"] == "REPLACE THIS WITH TOKEN"):
-        print("Add your token to secrets.json")
-        exit()
-except Exception as ex:
-    print(str(ex))
-    secretsDict = { "token": "REPLACE THIS WITH TOKEN"}
-    with open("secrets.json", "w") as outfile:
-        json.dump(secretsDict, outfile)
-    print("Add your token to secrets.json")
-    exit()
 
 logging.basicConfig()
 bot = commands.Bot(command_prefix=prefsDict["commandPrefix"])
@@ -56,7 +44,7 @@ async def on_ready():
 @bot.event
 async def on_member_join(member):
     #Add any new bots invited to the server to the designated bot role
-    if(member.bot == True):
+    if member.bot == True:
         try:
             role = discord.utils.get(member.server.roles, name="Skynet")
             await bot.add_roles(member, role)
@@ -92,4 +80,4 @@ async def on_command_error(error, ctx):
     if isinstance(error, commands.CommandOnCooldown):
         await bot.send_message(ctx.message.channel, content="This command is on cooldown. Try again in {0:.2f}s.".format(error.retry_after))
 
-bot.run(secretsDict["token"])
+bot.run(os.environ["DISCORD_TOKEN"])

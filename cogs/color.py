@@ -36,7 +36,6 @@ class color:
             for role in ctx.message.author.roles:
                 if(str(role) in colorList):
                     await self.bot.remove_roles(ctx.message.author, role)
-            await self.bot.say("Color set to default")
         elif colorSelection[1].lower() in colorList:
             colorSelection = colorSelection[1].lower()
             #Remove all previous color roles from the user
@@ -45,7 +44,7 @@ class color:
                     await self.bot.remove_roles(ctx.message.author, role)
             #Determine if the color role already exists, if not then create it
             role = discord.utils.get(ctx.message.author.server.roles, name=colorSelection)
-            if (role == None):
+            if role is None:
                 color = await self.bot.create_role(ctx.message.server)
                 await self.bot.edit_role(ctx.message.server, color, name=colorSelection, colour=colorList[colorSelection])
             #Give the author the color role

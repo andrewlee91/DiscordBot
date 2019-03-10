@@ -17,7 +17,7 @@ class basic:
     @commands.command(pass_context=True)
     async def avatar(self, ctx):
         """Post yours or mentioned users avatar"""
-        if(len(ctx.message.mentions) > 0):
+        if len(ctx.message.mentions > 0):
            await self.bot.say(str(ctx.message.mentions[0].avatar_url))
         else:
            await self.bot.say(str(ctx.message.author.avatar_url))
@@ -70,9 +70,9 @@ class basic:
     async def flip(self):
        """Flip a coin"""
        r = random.randint(1,2)
-       if(r == 1):
+       if r == 1:
            await self.bot.say("It landed on... **Heads**")
-       elif(r == 2):
+       elif r == 2:
            await self.bot.say("It landed on... **Tails**")
 
     @commands.command(pass_context=True)
