@@ -19,6 +19,7 @@ class help:
             embedMessage.add_field(name="Basic", value="Basic commands", inline=True)
             embedMessage.add_field(name="Color", value="Set your own color", inline=True)
             embedMessage.add_field(name="Search", value="Search various websites", inline=True)
+            embedMessage.add_field(name="RemindMe", value="Set your own reminders", inline=True)
             embedMessage.add_field(name="Admin", value="Admin only!", inline=True)
 
             embedMessage.set_footer(text="https://github.com/andrewlee91/DiscordBot")
@@ -92,6 +93,19 @@ class help:
 
         await self.bot.send_message(ctx.message.channel, embed=embedMessage)
 
+    @help.command(pass_context=True)
+    async def remindme(self, ctx):
+        """RemindMe subcommand"""
+        embedMessage = discord.Embed(
+            title="All commands use the {} prefix.".format(self.bot.command_prefix),
+            colour=0x87ceeb)
+        embedMessage.set_author(name="{}'s commands!".format(self.bot.user.name), icon_url=self.bot.user.avatar_url)
+
+        embedMessage.add_field(name="remindme", value="{}remindme <length> <minute/hour/day/month> <text>".format(self.bot.command_prefix), inline=False)
+
+        embedMessage.set_footer(text="{}help to see all command groups".format(self.bot.command_prefix))
+
+        await self.bot.send_message(ctx.message.channel, embed=embedMessage)
 
 
 
