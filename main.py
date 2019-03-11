@@ -24,6 +24,8 @@ async def on_ready():
     cogsList = os.listdir("cogs")
     if "__pycache__" in cogsList:
         cogsList.remove("__pycache__")
+    if "data" in cogsList:
+        cogsList.remove("data")
     #Try to load the cogs
     for cog in cogsList:
         #Trim .py from the end of the file names
