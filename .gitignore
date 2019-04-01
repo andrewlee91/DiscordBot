@@ -113,5 +113,8 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-secrets.json
 .vscode
+
+prefs.json
+followinglist.json
+tweets.json
