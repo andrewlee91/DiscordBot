@@ -19,9 +19,11 @@ class twitter:
                 json.dump(followingList, outfile)
 
     @commands.command(pass_context=True)
+    @commands.cooldown(1, 60, commands.BucketType.default)
     async def follow(self, ctx, username:str):
         """Follow a user"""
-        twitterstreamer.FollowUser(username, ctx.message.channel.id)
+        status = twitterstreamer.FollowUser(username, ctx.message.channel.id)
+        await self.bot.say(status)
 
     async def check_tweets(self):
         """Check Tweets"""
