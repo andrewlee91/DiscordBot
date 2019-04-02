@@ -25,6 +25,13 @@ class twitter:
         status = twitterstreamer.FollowUser(username, ctx.message.channel.id)
         await self.bot.say(status)
 
+    @commands.command(pass_context=True)
+    @commands.cooldown(1, 60, commands.BucketType.default)
+    async def unfollow(self, ctx, username:str):
+        """Unfollow a user"""
+        status = twitterstreamer.UnfollowUser(username)
+        await self.bot.say(status)
+
     async def check_tweets(self):
         """Check Tweets"""
         while not self.bot.is_closed:

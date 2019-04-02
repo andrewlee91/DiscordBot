@@ -54,7 +54,7 @@ def FollowUser(username : str, channelID: int):
         stream.disconnect()
         twitterID = ConvertUsernameToID(username)
         if twitterID is None:
-            return
+            return "Cannot find the user: {}".format(username)
         followingList[username.lower()] = [twitterID, channelID]
         with open("followinglist.json", "w") as outfile:
             json.dump(followingList, outfile)
@@ -64,6 +64,28 @@ def FollowUser(username : str, channelID: int):
             idList += ", "
         stream.filter(follow=[idList], is_async=True)
         return "Started following {}".format(username)
+    except Exception as e:
+        return str(e)
+
+def UnfollowUser(username : str):
+    try:
+        if username not in followingList:
+            return "You are not following {}".format(username)
+
+        stream.disconnect()
+
+        tempList = followingList
+        del tempList[username]
+
+        with open("followinglist.json", "w") as outfile:
+            json.dump(tempList, outfile)
+
+        idList = ""
+        for i in followingList:
+            idList += str(followingList[i][0])
+            idList += ", "
+        stream.filter(follow=[idList], is_async=True)
+        return "Unfollowed {}".format(username)
     except Exception as e:
         return str(e)
 
@@ -82,7 +104,7 @@ stream.filter(follow=[idList], is_async=True)
 #https://developer.twitter.com/en/docs/basics/response-codes.html
 def errorCodes(x):
     return {
-        400:"Bad Request - The request was invalid or cannot be otherwise served. ",
+        400:"Bad Request - The request was invalid or cannot be otherwise served.",
         401:"Unauthorized - Missing or incorrect authentication credentials.",
         403:"Forbidden - The request is understood, but it has been refused or access is not allowed.",
         404:"Not Found - The URI requested is invalid or the resource requested, such as a user, does not exist.",
