@@ -63,8 +63,9 @@ def FollowUser(username : str, channelID: int):
             idList += str(followingList[i][0])
             idList += ", "
         stream.filter(follow=[idList], is_async=True)
+        return "Started following {}".format(username)
     except Exception as e:
-        print(str(e))
+        return str(e)
 
 def ConvertUsernameToID(username: str):
     user = api.get_user(screen_name=username)
