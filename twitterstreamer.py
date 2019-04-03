@@ -28,20 +28,25 @@ class TwitterStreamer(StreamListener):
     def on_status(self, status):
         #Ensure that from the tweet we recieve, that the user is actually on the following list
         if status.user.screen_name.lower() in followingList:
-            #Construct the URL for the tweet
-            tweetURL = "https://twitter.com/{}/status/{}".format(status.user.screen_name, status.id)
+            #Get JSON for the status because it's easier to parse
+            statusJSON = status._json
 
-            #Save the tweet to json along with the screen name so we can identify information for posting the tweet to the correct channel
-            try:
-                tweets = json.load(open("tweets.json"))
-                tweets[status.id] = [status.user.screen_name.lower(), tweetURL]
-                with open("tweets.json", "w") as outfile:
-                    json.dump(tweets, outfile)
-            except:
-                tweets = {}
-                tweets[status.id] = [status.user.screen_name.lower(), tweetURL]
-                with open("tweets.json", "w") as outfile:
-                    json.dump(tweets, outfile)
+            #Ensure it's not a retweet or reply
+            if "retweeted_status" not in statusJSON and statusJSON["in_reply_to_user_id"] is None:
+                #Construct the URL for the tweet
+                tweetURL = "https://twitter.com/{}/status/{}".format(statusJSON["user"]["screen_name"], statusJSON["id"])
+
+                #Save the tweet to json along with the screen name so we can identify information for posting the tweet to the correct channel
+                try:
+                    tweets = json.load(open("tweets.json"))
+                    tweets[status.id] = [status.user.screen_name.lower(), tweetURL]
+                    with open("tweets.json", "w") as outfile:
+                        json.dump(tweets, outfile)
+                except:
+                    tweets = {}
+                    tweets[status.id] = [status.user.screen_name.lower(), tweetURL]
+                    with open("tweets.json", "w") as outfile:
+                        json.dump(tweets, outfile)
 
         return True
 
