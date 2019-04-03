@@ -1,5 +1,6 @@
-import os
 import json
+import logging
+import os
 
 import tweepy
 from tweepy.streaming import StreamListener
@@ -8,6 +9,8 @@ from tweepy import Stream
 from tweepy import api
 
 from tweepy.models import Status
+
+logger = logging.getLogger(__name__)
 
 consumerKey = os.environ["TWITTER_CONSUMER_KEY"]
 consumerSecret = os.environ["TWITTER_CONSUMER_SECRET"]
@@ -34,7 +37,7 @@ class TwitterStreamer(StreamListener):
                 tweets[status.id] = [status.user.screen_name.lower(), tweetURL]
                 with open("tweets.json", "w") as outfile:
                     json.dump(tweets, outfile)
-            except Exception as ex:
+            except:
                 tweets = {}
                 tweets[status.id] = [status.user.screen_name.lower(), tweetURL]
                 with open("tweets.json", "w") as outfile:
@@ -43,31 +46,36 @@ class TwitterStreamer(StreamListener):
         return True
 
     def on_error(self, code):
-        print("{}: {}".format(code, errorCodes(code)))
+        logging.error("{}: {}".format(code, errorCodes(code)))
         #Twitter error 420 means that the app is being rate limited
         #Consecutive 420 error codes will increase the length of time that the client must wait
         if code == 420:
             return False
 
-def FollowUser(username : str, channelID: int):
+def FollowUser(username: str, channelID: int):
     try:
         stream.disconnect()
         twitterID = ConvertUsernameToID(username)
+
         if twitterID is None:
             return "Cannot find the user: {}".format(username)
+
         followingList[username.lower()] = [twitterID, channelID]
         with open("followinglist.json", "w") as outfile:
             json.dump(followingList, outfile)
+
         idList = ""
         for i in followingList:
             idList += str(followingList[i][0])
             idList += ", "
+
         stream.filter(follow=[idList], is_async=True)
         return "Started following {}".format(username)
     except Exception as e:
+        logging.error(str(e))
         return str(e)
 
-def UnfollowUser(username : str):
+def UnfollowUser(username: str):
     try:
         if username not in followingList:
             return "You are not following {}".format(username)
@@ -84,20 +92,24 @@ def UnfollowUser(username : str):
         for i in followingList:
             idList += str(followingList[i][0])
             idList += ", "
+
         stream.filter(follow=[idList], is_async=True)
         return "Unfollowed {}".format(username)
     except Exception as e:
+        logging.error(str(e))
         return str(e)
 
 def ConvertUsernameToID(username: str):
     user = api.get_user(screen_name=username)
     return user.id
 
-#Main
+
 idList = ""
 for i in followingList:
     idList += str(followingList[i][0]) + ", "
+
 l = TwitterStreamer()
+
 stream = Stream(auth, l)
 stream.filter(follow=[idList], is_async=True)
 

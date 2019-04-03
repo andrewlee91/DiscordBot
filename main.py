@@ -1,20 +1,22 @@
-import discord
-from discord.ext import commands
-import logging
 import json
+import logging
 import os
 
-#prefs.json is used to store things like the command prefix and any channel ids that need to be saved between sessions
+import discord
+from discord.ext import commands
+
+#prefs.json is used to store things like the command prefix and any channel ids
 try:
     prefsDict = json.load(open("prefs.json"))
-except Exception as ex:
-    prefsDict = { 
+except Exception as e:
+    logging.error(str(e))
+    prefsDict = {
         "commandPrefix": "f!"
         }
     with open("prefs.json", "w") as outfile:
         json.dump(prefsDict, outfile)
 
-logging.basicConfig()
+logging.basicConfig(filename="error.log", filemode="a", format='%(asctime)s - %(message)s', datefmt='%d-%b-%y %H:%M:%S')
 bot = commands.Bot(command_prefix=prefsDict["commandPrefix"])
 bot.remove_command("help")
 
@@ -24,8 +26,6 @@ async def on_ready():
     cogsList = os.listdir("cogs")
     if "__pycache__" in cogsList:
         cogsList.remove("__pycache__")
-    if "data" in cogsList:
-        cogsList.remove("data")
     #Try to load the cogs
     for cog in cogsList:
         #Trim .py from the end of the file names
@@ -34,14 +34,13 @@ async def on_ready():
             #cogs. is required to point to the correct directory
             bot.load_extension("cogs." + cog)
         except Exception as e:
-            print(str(e))
+            logging.error(str(e))
     #Set the bots playing message to show use of the prefix
     await bot.change_presence(game=discord.Game(name="{}help".format(prefsDict["commandPrefix"])))
 
     print("--------------------")
     print(bot.user.name + " has started!")
     print("--------------------")
-
 
 @bot.event
 async def on_member_join(member):
@@ -51,7 +50,7 @@ async def on_member_join(member):
             role = discord.utils.get(member.server.roles, name="Skynet")
             await bot.add_roles(member, role)
         except discord.Forbidden:
-            print("I don't have permissions to add roles")
+            logging.error("Bot does not have permissions to add roles")
 
 @bot.event
 async def on_message(message):
@@ -63,8 +62,9 @@ async def load(cog):
     """Load an cog"""
     try:
         bot.load_extension("cogs." + cog)
-        await bot.say(cog + " loaded :thumbsup:")
-    except (AttributeError, ImportError) as e:
+        await bot.say("{} loaded :thumbsup:".format(cog))
+    except Exception as e:
+        logging.error(str(e))
         await bot.say(str(e))
 
 @bot.command(hidden=True)
@@ -73,8 +73,9 @@ async def unload(cog):
     """Unload an cog"""
     try:
         bot.unload_extension("cogs." + cog)
-        await bot.say(cog + " unloaded :thumbsdown:")
-    except (AttributeError, ImportError) as e:
+        await bot.say("{} unloaded :thumbsdown:".format(cog))
+    except Exception as e:
+        logging.error(str(e))
         await bot.say(str(e))
 
 @bot.event

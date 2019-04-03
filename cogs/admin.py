@@ -1,8 +1,12 @@
+import json
+import logging
+import os
+import aiohttp
+
 import discord
 from discord.ext import commands
-import json
-import aiohttp
-import os
+
+logger = logging.getLogger(__name__)
 
 class admin:
     """Admin only commands"""
@@ -10,28 +14,23 @@ class admin:
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(pass_context=True)
+    @commands.command()
     @commands.has_any_role("Admin")
-    async def setprefix(self, ctx):
+    async def setprefix(self, prefix: str):
         """Set prefix for commands"""
-        t = ctx.message.content.split(" ", 1)
-        if len(t) == 1:
-            await self.bot.say("You must specify a prefix")
-        elif len(t[1]) > 2:
+        if len(prefix) > 2:
             await self.bot.say("You can only have 2 characters maximum set as a prefix")
-        else:
-            try:
-                #Set the new prefix with the bot then save to to prefs.json
-                self.bot.command_prefix = t[1]
-                prefsDict = json.load(open("prefs.json"))
-                prefsDict["commandPrefix"] = t[1]
-                with open("prefs.json", "w") as fp:
-                    json.dump(prefsDict, fp, indent=4)
-                await self.bot.say("Prefix was set as {}".format(prefsDict["commandPrefix"]))
-                #Set the playing message to use the new prefix
-                await self.bot.change_presence(game=discord.Game(name="{}help".format(prefsDict["commandPrefix"])))
-            except Exception as ex:
-                await self.bot.say(str(ex))
+            return
+
+        #Set the new prefix with the bot then save to to prefs.json
+        self.bot.command_prefix = prefix
+        prefsDict = json.load(open("prefs.json"))
+        prefsDict["commandPrefix"] = prefix
+        with open("prefs.json", "w") as fp:
+            json.dump(prefsDict, fp, indent=4)
+        await self.bot.say("Prefix was set as {}".format(prefsDict["commandPrefix"]))
+        #Set the playing message to use the new prefix
+        await self.bot.change_presence(game=discord.Game(name="{}help".format(prefsDict["commandPrefix"])))
 
     @commands.command(pass_context=True)
     @commands.has_any_role("Admin")
@@ -46,7 +45,7 @@ class admin:
 
     @commands.command(pass_context=True)
     @commands.has_any_role("Admin")
-    @commands.cooldown(1, 60, commands.BucketType.default)
+    @commands.cooldown(1, 30, commands.BucketType.default)
     async def setavatar(self, ctx):
         """Set the bots avatar"""
         t = ctx.message.content.split(" ", 1)

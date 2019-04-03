@@ -1,6 +1,10 @@
+import logging
+import random
+
 import discord
 from discord.ext import commands
-import random
+
+logger = logging.getLogger(__name__)
 
 class basic:
     """Basic commands"""
@@ -8,11 +12,10 @@ class basic:
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(pass_context=True)
-    async def say(self, ctx):
+    @commands.command()
+    async def say(self, *, text: str):
         """Make the bot say something"""
-        t = str(ctx.message.content).split(" ", 1)[1]
-        await self.bot.say(t)
+        await self.bot.say(text)
 
     @commands.command(pass_context=True)
     async def avatar(self, ctx):
@@ -24,92 +27,92 @@ class basic:
 
     @commands.command(pass_context=True)
     async def choose(self, ctx):
-       """Choose between options (seperated by commas)"""
-       t = str(ctx.message.content).split(" ", 1)[1]
-       temp = t.split(",")
-       r = random.randint(0, len(temp) - 1)
-       await self.bot.say("I choose... **{}** :thinking:".format(temp[r]))
+        """Choose between options (seperated by commas)"""
+        t = str(ctx.message.content).split(" ", 1)[1]
+        temp = t.split(",")
+        r = random.randint(0, len(temp) - 1)
+        await self.bot.say("I choose... **{}** :thinking:".format(temp[r]))
 
     @commands.group(pass_context=True)
     async def roll(self, ctx):
-       """Roll the dice (d6 default)"""
-       if ctx.invoked_subcommand is None:
-           await self.bot.say("You rolled... **{}** :game_die:".format(str(random.randint(1,6))))
+        """Roll the dice (d6 default)"""
+        if ctx.invoked_subcommand is None:
+            await self.bot.say("You rolled... **{}** :game_die:".format(str(random.randint(1, 6))))
 
     @roll.command(pass_context=True)
     async def d4(self):
-       """Roll a D4 dice"""
-       await self.bot.say("You rolled... **{}** :game_die:".format(str(random.randint(1,4))))
+        """Roll a D4 dice"""
+        await self.bot.say("You rolled... **{}** :game_die:".format(str(random.randint(1, 4))))
 
     @roll.command(pass_context=True)
     async def d6(self):
-       """Roll a D6 dice"""
-       await self.bot.say("You rolled... **{}** :game_die:".format(str(random.randint(1,6))))
+        """Roll a D6 dice"""
+        await self.bot.say("You rolled... **{}** :game_die:".format(str(random.randint(1, 6))))
 
     @roll.command(pass_context=True)
     async def d8(self):
-       """Roll a D8 dice"""
-       await self.bot.say("You rolled... **{}** :game_die:".format(str(random.randint(1,8))))
+        """Roll a D8 dice"""
+        await self.bot.say("You rolled... **{}** :game_die:".format(str(random.randint(1, 8))))
 
     @roll.command(pass_context=True)
     async def d10(self):
-       """Roll a D10 dice"""
-       await self.bot.say("You rolled... **{}** :game_die:".format(str(random.randint(1,10))))
+        """Roll a D10 dice"""
+        await self.bot.say("You rolled... **{}** :game_die:".format(str(random.randint(1, 10))))
 
     @roll.command(pass_context=True)
     async def d12(self):
-       """Roll a D12 dice"""
-       await self.bot.say("You rolled... **{}** :game_die:".format(str(random.randint(1,12))))
+        """Roll a D12 dice"""
+        await self.bot.say("You rolled... **{}** :game_die:".format(str(random.randint(1, 12))))
 
     @roll.command(pass_context=True)
     async def d20(self):
-       """Roll a D20 dice"""
-       await self.bot.say("You rolled... **{}** :game_die:".format(str(random.randint(1,20))))
+        """Roll a D20 dice"""
+        await self.bot.say("You rolled... **{}** :game_die:".format(str(random.randint(1, 20))))
 
     @commands.command()
     async def flip(self):
-       """Flip a coin"""
-       r = random.randint(1,2)
-       if r == 1:
-           await self.bot.say("It landed on... **Heads**")
-       elif r == 2:
-           await self.bot.say("It landed on... **Tails**")
+        """Flip a coin"""
+        r = random.randint(1, 2)
+        if r == 1:
+            await self.bot.say("It landed on... **Heads**")
+        elif r == 2:
+            await self.bot.say("It landed on... **Tails**")
 
     @commands.command(pass_context=True)
     async def rps(self, ctx):
-       """Play rock-paper-scissors"""
-       userChoice = ctx.message.content.split(" ", 1)
-       userChoice = userChoice[1].lower()
+        """Play rock-paper-scissors"""
+        userChoice = ctx.message.content.split(" ", 1)
+        userChoice = userChoice[1].lower()
 
-       if userChoice != "rock" and userChoice != "paper" and userChoice != "scissors":
-           await self.bot.say("You can only choose from rock, paper or scissors")
-       else:
-           temp = random.randint(1, 3)
-           if temp == 1:
-               botChoice = "rock"
-           elif temp == 2:
-               botChoice = "paper"
-           elif temp == 3:
-               botChoice = "scissors"
+        if userChoice != "rock" and userChoice != "paper" and userChoice != "scissors":
+            await self.bot.say("You can only choose from rock, paper or scissors")
+        else:
+            temp = random.randint(1, 3)
+            if temp == 1:
+                botChoice = "rock"
+            elif temp == 2:
+                botChoice = "paper"
+            elif temp == 3:
+                botChoice = "scissors"
 
            #This is kind of ugly but it works
-           if userChoice == botChoice:
-               await self.bot.say("I choose **{}**. The game was a tie!".format(botChoice))
-           elif userChoice == "rock":
-               if botChoice == "paper":
-                   await self.bot.say("I choose **{}**. I win!".format(botChoice))
-               elif botChoice == "scissors":
-                   await self.bot.say("I choose **{}**. You win!".format(botChoice))
-           elif userChoice == "paper":
-               if botChoice == "scissors":
-                   await self.bot.say("I choose **{}**. I win!".format(botChoice))
-               elif botChoice == "rock":
-                   await self.bot.say("I choose **{}**. You win!".format(botChoice))
-           elif userChoice == "scissors":
-               if botChoice == "rock":
-                   await self.bot.say("I choose **{}**. I win!".format(botChoice))
-               elif botChoice == "paper":
-                   await self.bot.say("I choose **{}**. You win!".format(botChoice))
+            if userChoice == botChoice:
+                await self.bot.say("I choose **{}**. The game was a tie!".format(botChoice))
+            elif userChoice == "rock":
+                if botChoice == "paper":
+                    await self.bot.say("I choose **{}**. I win!".format(botChoice))
+                elif botChoice == "scissors":
+                    await self.bot.say("I choose **{}**. You win!".format(botChoice))
+            elif userChoice == "paper":
+                if botChoice == "scissors":
+                    await self.bot.say("I choose **{}**. I win!".format(botChoice))
+                elif botChoice == "rock":
+                    await self.bot.say("I choose **{}**. You win!".format(botChoice))
+            elif userChoice == "scissors":
+                if botChoice == "rock":
+                    await self.bot.say("I choose **{}**. I win!".format(botChoice))
+                elif botChoice == "paper":
+                    await self.bot.say("I choose **{}**. You win!".format(botChoice))
 
     @commands.command(pass_context=True)
     async def eightball(self, ctx):

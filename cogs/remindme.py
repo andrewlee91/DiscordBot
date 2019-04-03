@@ -1,8 +1,12 @@
+import asyncio
+import json
+import logging
+import time
+
 import discord
 from discord.ext import commands
-import asyncio
-import time
-import json
+
+logger = logging.getLogger(__name__)
 
 #Time conversions to seconds, includes variations for plurals
 timeConversions = {
@@ -25,27 +29,22 @@ class remindme:
         #Check files
         try:
             remindersList = json.load(open("reminders.json"))
-        except Exception as ex:
+        except:
             remindersList = {}
             with open("reminders.json", "w") as outfile:
                 json.dump(remindersList, outfile)
 
     @commands.command(pass_context=True)
-    async def remindme(self, ctx, length:int, unit:str, *, text:str):
+    async def remindme(self, ctx, length: int, unit: str, *, text: str):
         """Sends you a reminder. Cannot be shorter than 1 minute"""
         #Check input
         if length < 1:
             await self.bot.say("You must specify a time greater than 0.")
-            return #Don't want to spam errors
-        #
+            return
         if unit.lower() not in timeConversions:
             await self.bot.say("You must specify minute(s)/hour(s)/day(s)/month(s).")
             return
-        #
-        if len(text) < 1:
-            await self.bot.say("You must specify reminder text.")
-            return
-        elif len(text) > 1000:
+        if len(text) > 1000:
             await self.bot.say("Reminder text is too long.")
             return
 
@@ -63,7 +62,7 @@ class remindme:
         remindersList[remindTime] = [text, userID, channelID]
 
         with open("reminders.json", "w") as outfile:
-                json.dump(remindersList, outfile)
+            json.dump(remindersList, outfile)
 
         await self.bot.say("I'll remind you '{}' in {} {}".format(text, length, unit))
 
