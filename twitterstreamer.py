@@ -31,8 +31,8 @@ class TwitterStreamer(StreamListener):
             #Get JSON for the status because it's easier to parse
             statusJSON = status._json
 
-            #Ensure it's not a retweet or reply
-            if "retweeted_status" not in statusJSON and statusJSON["in_reply_to_user_id"] is None:
+            #Ensure it's not a retweet or reply to another user
+            if "retweeted_status" not in statusJSON and (statusJSON["in_reply_to_user_id"] is None or statusJSON["in_reply_to_screen_name"] == statusJSON["user"]["screen_name"]):
                 #Construct the URL for the tweet
                 tweetURL = "https://twitter.com/{}/status/{}".format(statusJSON["user"]["screen_name"], statusJSON["id"])
 
