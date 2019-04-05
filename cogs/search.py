@@ -63,14 +63,23 @@ class search:
     async def urban(self, *, term: str):
         """Search Urban Dictionary"""
         req = requests.get("http://api.urbandictionary.com/v0/define?term={}".format(term))
+        #Get JSON data for the first result
         dictTerm = req.json()
         dictTerm = dictTerm["list"][0]
         
         word = dictTerm["word"]
         definition = dictTerm["definition"]
         example = dictTerm["example"]
-        message = "Word: {} \n Definition: {} \n Example: {}".format(word, definition, example)
-        await self.bot.say("{}".format(message))
+        message = "{} \n\n *{}*".format(definition, example)
+
+        #Get rid of any square brackets
+        message = message.replace("[", "")
+        message = message.replace("]", "")
+
+        embed = discord.Embed()
+        embed.add_field(name=word, value=message, inline=False)
+
+        await self.bot.say(embed=embed)
 
 def setup(bot):
     bot.add_cog(search(bot))
