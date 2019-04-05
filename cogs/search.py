@@ -1,6 +1,8 @@
 import logging
 import os
 import aiohttp
+import json
+import requests
 
 import discord
 from discord.ext import commands
@@ -56,6 +58,28 @@ class search:
         channel = ctx.message.channel
         await self.bot.send_file(channel, "osu.png", filename="osu.png", content="")
         os.remove("osu.png")
+
+    @commands.command()
+    async def urban(self, *, term: str):
+        """Search Urban Dictionary"""
+        req = requests.get("http://api.urbandictionary.com/v0/define?term={}".format(term))
+        #Get JSON data for the first result
+        dictTerm = req.json()
+        dictTerm = dictTerm["list"][0]
+        
+        word = dictTerm["word"]
+        definition = dictTerm["definition"]
+        example = dictTerm["example"]
+        message = "{} \n\n *{}*".format(definition, example)
+
+        #Get rid of any square brackets
+        message = message.replace("[", "")
+        message = message.replace("]", "")
+
+        embed = discord.Embed()
+        embed.add_field(name=word, value=message, inline=False)
+
+        await self.bot.say(embed=embed)
 
 def setup(bot):
     bot.add_cog(search(bot))
