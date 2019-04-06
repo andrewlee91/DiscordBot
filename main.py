@@ -22,10 +22,12 @@ bot.remove_command("help")
 
 @bot.event
 async def on_ready():
-    #Get the list of cogs available and check if pycache is still lingering
+    #Get the list of cogs available and check if unwanted files are still lingering
     cogsList = os.listdir("cogs")
     if "__pycache__" in cogsList:
         cogsList.remove("__pycache__")
+    if "utils" in cogsList:
+        cogsList.remove("utils")
     #Try to load the cogs
     for cog in cogsList:
         #Trim .py from the end of the file names
