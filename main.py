@@ -5,48 +5,55 @@ import os
 import discord
 from discord.ext import commands
 
-#prefs.json is used to store things like the command prefix and any channel ids
+# prefs.json is used to store things like the command prefix and any channel ids
 try:
     prefsDict = json.load(open("prefs.json"))
 except Exception as e:
     logging.error(str(e))
-    prefsDict = {
-        "commandPrefix": "f!"
-        }
+    prefsDict = {"commandPrefix": "f!"}
     with open("prefs.json", "w") as outfile:
         json.dump(prefsDict, outfile)
 
-logging.basicConfig(filename="error.log", filemode="a", format='%(asctime)s - %(message)s', datefmt='%d-%b-%y %H:%M:%S')
+logging.basicConfig(
+    filename="error.log",
+    filemode="a",
+    format="%(asctime)s - %(message)s",
+    datefmt="%d-%b-%y %H:%M:%S",
+)
 bot = commands.Bot(command_prefix=prefsDict["commandPrefix"])
 bot.remove_command("help")
 
+
 @bot.event
 async def on_ready():
-    #Get the list of cogs available and check if unwanted files are still lingering
+    # Get the list of cogs available and check if unwanted files are still lingering
     cogsList = os.listdir("cogs")
     if "__pycache__" in cogsList:
         cogsList.remove("__pycache__")
     if "utils" in cogsList:
         cogsList.remove("utils")
-    #Try to load the cogs
+    # Try to load the cogs
     for cog in cogsList:
-        #Trim .py from the end of the file names
+        # Trim .py from the end of the file names
         cog = cog[:-3]
         try:
-            #cogs. is required to point to the correct directory
+            # cogs. is required to point to the correct directory
             bot.load_extension("cogs." + cog)
         except Exception as e:
             logging.error(str(e))
-    #Set the bots playing message to show use of the prefix
-    await bot.change_presence(game=discord.Game(name="{}help".format(prefsDict["commandPrefix"])))
+    # Set the bots playing message to show use of the prefix
+    await bot.change_presence(
+        game=discord.Game(name="{}help".format(prefsDict["commandPrefix"]))
+    )
 
     print("--------------------")
     print(bot.user.name + " has started!")
     print("--------------------")
 
+
 @bot.event
 async def on_member_join(member):
-    #Add any new bots invited to the server to the designated bot role
+    # Add any new bots invited to the server to the designated bot role
     if member.bot == True:
         try:
             role = discord.utils.get(member.server.roles, name="Skynet")
@@ -54,9 +61,11 @@ async def on_member_join(member):
         except discord.Forbidden:
             logging.error("Bot does not have permissions to add roles")
 
+
 @bot.event
 async def on_message(message):
     await bot.process_commands(message)
+
 
 @bot.command(hidden=True)
 @commands.has_any_role("Admin")
@@ -69,6 +78,7 @@ async def load(cog):
         logging.error(str(e))
         await bot.say(str(e))
 
+
 @bot.command(hidden=True)
 @commands.has_any_role("Admin")
 async def unload(cog):
@@ -80,9 +90,16 @@ async def unload(cog):
         logging.error(str(e))
         await bot.say(str(e))
 
+
 @bot.event
 async def on_command_error(error, ctx):
     if isinstance(error, commands.CommandOnCooldown):
-        await bot.send_message(ctx.message.channel, content="This command is on cooldown. Try again in {0:.2f}s.".format(error.retry_after))
+        await bot.send_message(
+            ctx.message.channel,
+            content="This command is on cooldown. Try again in {0:.2f}s.".format(
+                error.retry_after
+            ),
+        )
+
 
 bot.run(os.environ["DISCORD_TOKEN"])

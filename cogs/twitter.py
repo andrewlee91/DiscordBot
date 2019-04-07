@@ -9,6 +9,7 @@ from cogs.utils import twitterstreamer
 
 logger = logging.getLogger(__name__)
 
+
 class twitter:
     """Twitter"""
 
@@ -51,14 +52,17 @@ class twitter:
                 followingList = json.load(open("followinglist.json"))
                 for t in tweets:
                     channelID = followingList[tweets[t][0]][1]
-                    await self.bot.send_message(self.bot.get_channel(channelID), tweets[t][1])
+                    await self.bot.send_message(
+                        self.bot.get_channel(channelID), tweets[t][1]
+                    )
 
-            #Clear tweets because we've already posted them all
+            # Clear tweets because we've already posted them all
             tweets = {}
             with open("tweets.json", "w") as outfile:
                 json.dump(tweets, outfile)
 
             await asyncio.sleep(5)
+
 
 def setup(bot):
     loop = asyncio.get_event_loop()
