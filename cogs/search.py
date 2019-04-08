@@ -92,6 +92,81 @@ class search:
 
         await self.bot.say(embed=embed)
 
+    @commands.command()
+    async def anime(self, *, text: str):
+        """Search AniList for anime"""
+        query = """
+        query ($search: String) {
+            Media (search: $search, type: ANIME) {
+                id
+                title {
+                    romaji
+                    english
+                    native
+                }
+                description
+                episodes
+                duration
+                status
+                genres
+                averageScore
+                coverImage {
+                    large
+                }
+            }
+        }
+        """
+
+        variables = {"search": text}
+
+        response = requests.post(
+            "https://graphql.anilist.co", json={"query": query, "variables": variables}
+        )
+
+        rateLimitRemaining = int(response.headers["X-RateLimit-Remaining"])
+
+        # Rate limiting is currently set to 90 requests per minute
+        # If you go over the rate limit you'll receive a 1-minute timeout
+        # https://anilist.gitbook.io/anilist-apiv2-docs/overview/rate-limiting
+        if rateLimitRemaining > 0:
+            animeJSON = response.json()["data"]["Media"]
+
+            description = animeJSON["description"]
+            description = description.replace("<br>", "")
+            genres = ""
+            for g in animeJSON["genres"]:
+                genres += "{}, ".format(g)
+
+            embed = discord.Embed(
+                title="{} / {}".format(
+                    animeJSON["title"]["romaji"], animeJSON["title"]["native"]
+                ),
+                url="https://anilist.co/anime/{}".format(animeJSON["id"]),
+                description=description,
+            )
+            embed.set_thumbnail(url=animeJSON["coverImage"]["large"])
+            embed.add_field(
+                name="Episode Count", value=animeJSON["episodes"], inline=True
+            )
+            embed.add_field(
+                name="Duration",
+                value="{} minutes per episode".format(animeJSON["duration"]),
+                inline=True,
+            )
+            embed.add_field(name="Status", value=animeJSON["status"], inline=True)
+            embed.add_field(name="Genres", value=genres[:-2], inline=True)
+            embed.add_field(
+                name="Average Score", value=animeJSON["averageScore"], inline=True
+            )
+            embed.set_footer(text="Powered by anilist.co")
+            await self.bot.say(embed=embed)
+        else:
+            await self.bot.say(
+                "The bot is currently being rate limited :( Try again in {} seconds".format(
+                    response.headers["Retry-After"]
+                )
+            )
+
 
 def setup(bot):
     bot.add_cog(search(bot))
