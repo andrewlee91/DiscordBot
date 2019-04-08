@@ -164,7 +164,15 @@ class help:
             value="Get your Osu!Mania! stats based on username",
             inline=False,
         )
-
+        embedMessage.add_field(
+            name="urban", value="Search Urban Dictionary", inline=False
+        )
+        embedMessage.add_field(
+            name="anime", value="Search AniList for anime", inline=False
+        )
+        embedMessage.add_field(
+            name="manga", value="Search AniList for manga", inline=False
+        )
         embedMessage.set_footer(
             text="{}help to see all command groups".format(self.bot.command_prefix)
         )
