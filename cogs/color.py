@@ -25,46 +25,39 @@ colorList = {
 }
 
 
-class color:
+class color(commands.Cog):
     """Commands for setting your own color"""
 
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(pass_context=True)
+    @commands.command()
     @commands.cooldown(1, 30, commands.BucketType.user)
     async def color(self, ctx):
         """Change your color"""
-        colorSelection = ctx.message.content.split(" ", 1)
+        colorSelection = ctx.message.content.split(" ", 2)
+        user = ctx.message.author
+        guild = ctx.guild
         if len(colorSelection) == 1:
             # Change color to the default grey
-            for role in ctx.message.author.roles:
+            for role in user.roles:
                 if str(role) in colorList:
-                    await self.bot.remove_roles(ctx.message.author, role)
+                    await user.remove_roles(role)
         elif colorSelection[1].lower() in colorList:
             colorSelection = colorSelection[1].lower()
             # Remove all previous color roles from the user
-            for role in ctx.message.author.roles:
+            for role in user.roles:
                 if str(role) in colorList:
-                    await self.bot.remove_roles(ctx.message.author, role)
+                    await user.remove_roles(role)
             # Determine if the color role already exists, if not then create it
-            role = discord.utils.get(
-                ctx.message.author.server.roles, name=colorSelection
-            )
+            role = discord.utils.get(guild.roles, name=colorSelection)
             if role is None:
-                color = await self.bot.create_role(ctx.message.server)
-                await self.bot.edit_role(
-                    ctx.message.server,
-                    color,
-                    name=colorSelection,
-                    colour=colorList[colorSelection],
+                role = await guild.create_role(
+                    name=colorSelection, colour=colorList[colorSelection]
                 )
             # Give the author the color role
-            role = discord.utils.get(
-                ctx.message.author.server.roles, name=colorSelection
-            )
-            await self.bot.add_roles(ctx.message.author, role)
-            await self.bot.say("Lookin' good :sunglasses:")
+            await user.add_roles(role)
+            await ctx.send("Lookin' good :sunglasses:")
 
 
 def setup(bot):

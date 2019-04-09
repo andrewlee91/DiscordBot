@@ -21,7 +21,7 @@ timeConversions = {
 }
 
 
-class remindme:
+class remindme(commands.Cog):
     """Remind me of stuff"""
 
     def __init__(self, bot):

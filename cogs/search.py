@@ -1,7 +1,7 @@
 import logging
 import os
-import aiohttp
 import json
+import aiohttp
 import requests
 
 import discord
@@ -10,7 +10,7 @@ from discord.ext import commands
 logger = logging.getLogger(__name__)
 
 
-class search:
+class search(commands.Cog):
     """Search commands for various websites and games"""
 
     def __init__(self, bot):
@@ -22,11 +22,11 @@ class search:
         link = "http://lemmmy.pw/osusig/sig.php?colour=blue&uname={}&countryrank".format(
             username
         )
-        async with aiohttp.get(link) as img:
-            with open("osu.png", "wb") as f:
-                f.write(await img.read())
-        channel = ctx.message.channel
-        await self.bot.send_file(channel, "osu.png", filename="osu.png", content="")
+        async with aiohttp.ClientSession() as session:
+            async with session.get(link) as img:
+                with open("osu.png", "wb") as f:
+                    f.write(await img.read())
+        await ctx.send(file=discord.File("osu.png"))
         os.remove("osu.png")
 
     @commands.command(pass_context=True)
@@ -35,11 +35,11 @@ class search:
         link = "http://lemmmy.pw/osusig/sig.php?colour=blue&uname={}&mode=1&countryrank".format(
             username
         )
-        async with aiohttp.get(link) as img:
-            with open("osu.png", "wb") as f:
-                f.write(await img.read())
-        channel = ctx.message.channel
-        await self.bot.send_file(channel, "osu.png", filename="osu.png", content="")
+        async with aiohttp.ClientSession() as session:
+            async with session.get(link) as img:
+                with open("osu.png", "wb") as f:
+                    f.write(await img.read())
+        await ctx.send(file=discord.File("osu.png"))
         os.remove("osu.png")
 
     @commands.command(pass_context=True)
@@ -48,11 +48,11 @@ class search:
         link = "http://lemmmy.pw/osusig/sig.php?colour=blue&uname={}&mode=2&countryrank".format(
             username
         )
-        async with aiohttp.get(link) as img:
-            with open("osu.png", "wb") as f:
-                f.write(await img.read())
-        channel = ctx.message.channel
-        await self.bot.send_file(channel, "osu.png", filename="osu.png", content="")
+        async with aiohttp.ClientSession() as session:
+            async with session.get(link) as img:
+                with open("osu.png", "wb") as f:
+                    f.write(await img.read())
+        await ctx.send(file=discord.File("osu.png"))
         os.remove("osu.png")
 
     @commands.command(pass_context=True)
@@ -61,15 +61,15 @@ class search:
         link = "http://lemmmy.pw/osusig/sig.php?colour=blue&uname={}&mode=3&countryrank".format(
             username
         )
-        async with aiohttp.get(link) as img:
-            with open("osu.png", "wb") as f:
-                f.write(await img.read())
-        channel = ctx.message.channel
-        await self.bot.send_file(channel, "osu.png", filename="osu.png", content="")
+        async with aiohttp.ClientSession() as session:
+            async with session.get(link) as img:
+                with open("osu.png", "wb") as f:
+                    f.write(await img.read())
+        await ctx.send(file=discord.File("osu.png"))
         os.remove("osu.png")
 
     @commands.command()
-    async def urban(self, *, term: str):
+    async def urban(self, ctx, *, term: str):
         """Search Urban Dictionary"""
         req = requests.get(
             "http://api.urbandictionary.com/v0/define?term={}".format(term)
@@ -90,10 +90,10 @@ class search:
         embed = discord.Embed()
         embed.add_field(name=word, value=message, inline=False)
 
-        await self.bot.say(embed=embed)
+        await ctx.send(embed=embed)
 
     @commands.command()
-    async def anime(self, *, text: str):
+    async def anime(self, ctx, *, text: str):
         """Search AniList for anime"""
         query = """
         query ($search: String) {
@@ -159,16 +159,16 @@ class search:
                 name="Average Score", value=animeJSON["averageScore"], inline=True
             )
             embed.set_footer(text="Powered by anilist.co")
-            await self.bot.say(embed=embed)
+            await ctx.send(embed=embed)
         else:
-            await self.bot.say(
+            await ctx.send(
                 "The bot is currently being rate limited :( Try again in {} seconds".format(
                     response.headers["Retry-After"]
                 )
             )
 
     @commands.command()
-    async def manga(self, *, text: str):
+    async def manga(self, ctx, *, text: str):
         """Search AniList for manga"""
         query = """
         query ($search: String) {
@@ -228,9 +228,9 @@ class search:
                 name="Average Score", value=mangaJSON["averageScore"], inline=True
             )
             embed.set_footer(text="Powered by anilist.co")
-            await self.bot.say(embed=embed)
+            await ctx.send(embed=embed)
         else:
-            await self.bot.say(
+            await ctx.send(
                 "The bot is currently being rate limited :( Try again in {} seconds".format(
                     response.headers["Retry-After"]
                 )

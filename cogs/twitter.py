@@ -10,7 +10,7 @@ from cogs.utils import twitterstreamer
 logger = logging.getLogger(__name__)
 
 
-class twitter:
+class twitter(commands.Cog):
     """Twitter"""
 
     def __init__(self, bot):

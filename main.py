@@ -9,7 +9,6 @@ from discord.ext import commands
 try:
     prefsDict = json.load(open("prefs.json"))
 except Exception as e:
-    logging.error(str(e))
     prefsDict = {"commandPrefix": "f!"}
     with open("prefs.json", "w") as outfile:
         json.dump(prefsDict, outfile)
@@ -20,18 +19,18 @@ logging.basicConfig(
     format="%(asctime)s - %(message)s",
     datefmt="%d-%b-%y %H:%M:%S",
 )
-bot = commands.Bot(command_prefix=prefsDict["commandPrefix"])
-bot.remove_command("help")
+
+bot = commands.Bot(command_prefix=prefsDict["commandPrefix"], help_command=None)
 
 
 @bot.event
 async def on_ready():
     # Get the list of cogs available and check if unwanted files are still lingering
     cogsList = os.listdir("cogs")
-    if "__pycache__" in cogsList:
-        cogsList.remove("__pycache__")
     if "utils" in cogsList:
         cogsList.remove("utils")
+    if "__pycache__" in cogsList:
+        cogsList.remove("__pycache__")
     # Try to load the cogs
     for cog in cogsList:
         # Trim .py from the end of the file names
@@ -43,23 +42,10 @@ async def on_ready():
             logging.error(str(e))
     # Set the bots playing message to show use of the prefix
     await bot.change_presence(
-        game=discord.Game(name="{}help".format(prefsDict["commandPrefix"]))
+        activity=discord.Game(name="{}help".format(prefsDict["commandPrefix"]))
     )
 
-    print("--------------------")
-    print(bot.user.name + " has started!")
-    print("--------------------")
-
-
-@bot.event
-async def on_member_join(member):
-    # Add any new bots invited to the server to the designated bot role
-    if member.bot == True:
-        try:
-            role = discord.utils.get(member.server.roles, name="Skynet")
-            await bot.add_roles(member, role)
-        except discord.Forbidden:
-            logging.error("Bot does not have permissions to add roles")
+    print("{} has started using version {}".format(bot.user.name, discord.__version__))
 
 
 @bot.event
@@ -69,36 +55,36 @@ async def on_message(message):
 
 @bot.command(hidden=True)
 @commands.has_any_role("Admin")
-async def load(cog):
+async def load(ctx, cog: str):
     """Load an cog"""
     try:
         bot.load_extension("cogs." + cog)
-        await bot.say("{} loaded :thumbsup:".format(cog))
+        await ctx.send("{} loaded :thumbsup:".format(cog))
     except Exception as e:
         logging.error(str(e))
-        await bot.say(str(e))
+        await ctx.send(str(e))
 
 
 @bot.command(hidden=True)
 @commands.has_any_role("Admin")
-async def unload(cog):
+async def unload(ctx, cog: str):
     """Unload an cog"""
     try:
         bot.unload_extension("cogs." + cog)
-        await bot.say("{} unloaded :thumbsdown:".format(cog))
+        await ctx.send("{} unloaded :thumbsdown:".format(cog))
     except Exception as e:
         logging.error(str(e))
-        await bot.say(str(e))
+        await ctx.send(str(e))
 
 
 @bot.event
 async def on_command_error(error, ctx):
+    """Command errors"""
     if isinstance(error, commands.CommandOnCooldown):
-        await bot.send_message(
-            ctx.message.channel,
-            content="This command is on cooldown. Try again in {0:.2f}s.".format(
+        await ctx.send(
+            "This command is on cooldown. Try again in {0:.2f}s.".format(
                 error.retry_after
-            ),
+            )
         )
 
 

@@ -6,7 +6,7 @@ from discord.ext import commands
 logger = logging.getLogger(__name__)
 
 
-class help:
+class help(commands.Cog):
     """Cog for the help command"""
 
     def __init__(self, bot):
