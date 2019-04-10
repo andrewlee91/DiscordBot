@@ -87,5 +87,7 @@ async def on_command_error(error, ctx):
             )
         )
 
+    logging.error(error)
+
 
 bot.run(os.environ["DISCORD_TOKEN"])

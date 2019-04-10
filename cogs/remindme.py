@@ -35,18 +35,20 @@ class remindme(commands.Cog):
             with open("reminders.json", "w") as outfile:
                 json.dump(remindersList, outfile)
 
-    @commands.command(pass_context=True)
+        self.reminders_check = bot.loop.create_task(self.check_reminders())
+
+    @commands.command()
     async def remindme(self, ctx, length: int, unit: str, *, text: str):
         """Sends you a reminder. Cannot be shorter than 1 minute"""
         # Check input
         if length < 1:
-            await self.bot.say("You must specify a time greater than 0.")
+            await ctx.send("You must specify a time greater than 0.")
             return
         if unit.lower() not in timeConversions:
-            await self.bot.say("You must specify minute(s)/hour(s)/day(s)/month(s).")
+            await ctx.send("You must specify minute(s)/hour(s)/day(s)/month(s).")
             return
         if len(text) > 1000:
-            await self.bot.say("Reminder text is too long.")
+            await ctx.send("Reminder text is too long.")
             return
 
         # Calculate the time at which the bot should remind the user
@@ -65,11 +67,11 @@ class remindme(commands.Cog):
         with open("reminders.json", "w") as outfile:
             json.dump(remindersList, outfile)
 
-        await self.bot.say("I'll remind you '{}' in {} {}".format(text, length, unit))
+        await ctx.send("I'll remind you '{}' in {} {}".format(text, length, unit))
 
     async def check_reminders(self):
         """Check Reminders"""
-        while not self.bot.is_closed:
+        while not self.bot.is_closed():
             remindersList = json.load(open("reminders.json"))
             if len(remindersList) > 0:
                 tempDictionary = dict(remindersList)
@@ -80,9 +82,9 @@ class remindme(commands.Cog):
                         userID = remindersList[reminder][1]
                         channelID = remindersList[reminder][2]
                         reminderMessage = "<@{}> {}".format(userID, reminderText)
-                        await self.bot.send_message(
-                            self.bot.get_channel(channelID), reminderMessage
-                        )
+
+                        channel = self.bot.get_channel(channelID)
+                        await channel.send(reminderMessage)
                         del tempDictionary[reminder]
                 with open("reminders.json", "w") as outfile:
                     json.dump(tempDictionary, outfile)
@@ -90,6 +92,4 @@ class remindme(commands.Cog):
 
 
 def setup(bot):
-    loop = asyncio.get_event_loop()
-    loop.create_task(remindme(bot).check_reminders())
     bot.add_cog(remindme(bot))

@@ -27,19 +27,23 @@ class basic(commands.Cog):
             await ctx.send(str(ctx.message.author.avatar_url))
 
     @commands.command()
-    async def choose(self, ctx):
+    async def choose(self, ctx, *, text: str):
         """Choose between options (seperated by commas)"""
-        t = str(ctx.message.content).split(" ", 1)[1]
-        temp = t.split(",")
-        r = random.randint(0, len(temp) - 1)
-        await ctx.send("I choose... **{}** :thinking:".format(temp[r]))
+        # Remove spaces and white space, split into a list and choose a random element
+        text = text.strip()
+        temp = text.split(",")
+        await ctx.send(
+            "I choose... **{}** :thinking:".format(
+                temp[random.randint(0, len(temp) - 1)]
+            )
+        )
 
     @commands.group()
-    async def roll(self, ctx):
+    async def roll(self, ctx, number: int = 6):
         """Roll the dice (d6 default)"""
         if ctx.invoked_subcommand is None:
             await ctx.send(
-                "You rolled... **{}** :game_die:".format(str(random.randint(1, 6)))
+                "You rolled... **{}** :game_die:".format(str(random.randint(1, number)))
             )
 
     @roll.command()
@@ -87,17 +91,16 @@ class basic(commands.Cog):
     @commands.command()
     async def flip(self, ctx):
         """Flip a coin"""
-        r = random.randint(1, 2)
-        if r == 1:
+        rand = random.randint(1, 2)
+        if rand == 1:
             await ctx.send("It landed on... **Heads**")
-        elif r == 2:
+        elif rand == 2:
             await ctx.send("It landed on... **Tails**")
 
     @commands.command()
-    async def rps(self, ctx):
+    async def rps(self, ctx, choice: str):
         """Play rock-paper-scissors"""
-        userChoice = ctx.message.content.split(" ", 1)
-        userChoice = userChoice[1].lower()
+        userChoice = choice.lower()
 
         if userChoice != "rock" and userChoice != "paper" and userChoice != "scissors":
             await ctx.send("You can only choose from rock, paper or scissors")
@@ -130,14 +133,9 @@ class basic(commands.Cog):
                     await ctx.send("I choose **{}**. You win!".format(botChoice))
 
     @commands.command()
-    async def eightball(self, ctx):
+    async def eightball(self, ctx, *, text: str):
         """Ask the eightball a question"""
-        t = str(ctx.message.content).split(" ", 1)
-        if len(t) == 1:
-            await ctx.send("You must ask a question!")
-        else:
-            r = random.randint(1, 20)
-            await ctx.send("**{}** :8ball:".format(eightballDict(r)))
+        await ctx.send("**{}** :8ball:".format(eightballDict(random.randint(1, 20))))
 
 
 def eightballDict(x):

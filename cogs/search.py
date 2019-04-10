@@ -145,6 +145,7 @@ class search(commands.Cog):
                 description=description,
             )
             embed.set_thumbnail(url=animeJSON["coverImage"]["large"])
+
             embed.add_field(
                 name="Episode Count", value=animeJSON["episodes"], inline=True
             )
@@ -158,6 +159,7 @@ class search(commands.Cog):
             embed.add_field(
                 name="Average Score", value=animeJSON["averageScore"], inline=True
             )
+
             embed.set_footer(text="Powered by anilist.co")
             await ctx.send(embed=embed)
         else:
@@ -220,6 +222,7 @@ class search(commands.Cog):
                 description=description,
             )
             embed.set_thumbnail(url=mangaJSON["coverImage"]["large"])
+
             embed.add_field(name="Chapters", value=mangaJSON["chapters"], inline=True)
             embed.add_field(name="Volumes", value=mangaJSON["volumes"], inline=True)
             embed.add_field(name="Status", value=mangaJSON["status"], inline=True)
@@ -227,6 +230,7 @@ class search(commands.Cog):
             embed.add_field(
                 name="Average Score", value=mangaJSON["averageScore"], inline=True
             )
+
             embed.set_footer(text="Powered by anilist.co")
             await ctx.send(embed=embed)
         else:

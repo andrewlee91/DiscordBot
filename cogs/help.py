@@ -12,7 +12,7 @@ class help(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.group(pass_context=True)
+    @commands.group()
     async def help(self, ctx):
         """Help command"""
         if ctx.invoked_subcommand is None:
@@ -44,9 +44,9 @@ class help(commands.Cog):
 
             embedMessage.set_footer(text="https://github.com/andrewlee91/DiscordBot")
 
-            await self.bot.send_message(ctx.message.channel, embed=embedMessage)
+            await ctx.send(embed=embedMessage)
 
-    @help.command(pass_context=True)
+    @help.command()
     async def basic(self, ctx):
         """Basic subcommand"""
         embedMessage = discord.Embed(
@@ -83,9 +83,9 @@ class help(commands.Cog):
             text="{}help to see all command groups".format(self.bot.command_prefix)
         )
 
-        await self.bot.send_message(ctx.message.channel, embed=embedMessage)
+        await ctx.send(embed=embedMessage)
 
-    @help.command(pass_context=True)
+    @help.command()
     async def color(self, ctx):
         """Color subcommand"""
         embedMessage = discord.Embed(
@@ -106,9 +106,9 @@ class help(commands.Cog):
             text="{}help to see all command groups".format(self.bot.command_prefix)
         )
 
-        await self.bot.send_message(ctx.message.channel, embed=embedMessage)
+        await ctx.send(embed=embedMessage)
 
-    @help.command(pass_context=True)
+    @help.command()
     async def admin(self, ctx):
         """Admin subcommand"""
         embedMessage = discord.Embed(
@@ -133,9 +133,9 @@ class help(commands.Cog):
             text="{}help to see all command groups".format(self.bot.command_prefix)
         )
 
-        await self.bot.send_message(ctx.message.channel, embed=embedMessage)
+        await ctx.send(embed=embedMessage)
 
-    @help.command(pass_context=True)
+    @help.command()
     async def search(self, ctx):
         """Search subcommand"""
         embedMessage = discord.Embed(
@@ -177,9 +177,9 @@ class help(commands.Cog):
             text="{}help to see all command groups".format(self.bot.command_prefix)
         )
 
-        await self.bot.send_message(ctx.message.channel, embed=embedMessage)
+        await ctx.send(embed=embedMessage)
 
-    @help.command(pass_context=True)
+    @help.command()
     async def remindme(self, ctx):
         """RemindMe subcommand"""
         embedMessage = discord.Embed(
@@ -202,9 +202,9 @@ class help(commands.Cog):
             text="{}help to see all command groups".format(self.bot.command_prefix)
         )
 
-        await self.bot.send_message(ctx.message.channel, embed=embedMessage)
+        await ctx.send(embed=embedMessage)
 
-    @help.command(pass_context=True)
+    @help.command()
     async def twitter(self, ctx):
         """Twitter subcommand"""
         embedMessage = discord.Embed(
@@ -218,12 +218,15 @@ class help(commands.Cog):
         embedMessage.add_field(
             name="follow", value="Get updated when someone tweets", inline=False
         )
+        embedMessage.add_field(
+            name="unfollow", value="Remove a user from the following list", inline=False
+        )
 
         embedMessage.set_footer(
             text="{}help to see all command groups".format(self.bot.command_prefix)
         )
 
-        await self.bot.send_message(ctx.message.channel, embed=embedMessage)
+        await ctx.send(embed=embedMessage)
 
 
 def setup(bot):

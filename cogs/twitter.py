@@ -30,19 +30,21 @@ class twitter(commands.Cog):
             with open("tweets.json", "w") as outfile:
                 json.dump(tweets, outfile)
 
-    @commands.command(pass_context=True)
+        self.tweet_check = bot.loop.create_task(self.check_tweets())
+
+    @commands.command()
     @commands.cooldown(1, 60, commands.BucketType.default)
     async def follow(self, ctx, username: str):
         """Follow a user"""
         status = twitterstreamer.FollowUser(username, ctx.message.channel.id)
-        await self.bot.say(status)
+        await ctx.send(status)
 
     @commands.command()
     @commands.cooldown(1, 60, commands.BucketType.default)
-    async def unfollow(self, username: str):
+    async def unfollow(self, ctx, username: str):
         """Unfollow a user"""
         status = twitterstreamer.UnfollowUser(username)
-        await self.bot.say(status)
+        await ctx.send(status)
 
     async def check_tweets(self):
         """Check Tweets"""
@@ -52,9 +54,8 @@ class twitter(commands.Cog):
                 followingList = json.load(open("followinglist.json"))
                 for t in tweets:
                     channelID = followingList[tweets[t][0]][1]
-                    await self.bot.send_message(
-                        self.bot.get_channel(channelID), tweets[t][1]
-                    )
+                    channel = self.bot.get_channel(channelID)
+                    await channel.send(tweets[t][1])
 
             # Clear tweets because we've already posted them all
             tweets = {}
@@ -65,6 +66,4 @@ class twitter(commands.Cog):
 
 
 def setup(bot):
-    loop = asyncio.get_event_loop()
-    loop.create_task(twitter(bot).check_tweets())
     bot.add_cog(twitter(bot))

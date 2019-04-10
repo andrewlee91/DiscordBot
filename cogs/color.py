@@ -33,9 +33,9 @@ class color(commands.Cog):
 
     @commands.command()
     @commands.cooldown(1, 30, commands.BucketType.user)
-    async def color(self, ctx):
+    async def color(self, ctx, text: str):
         """Change your color"""
-        colorSelection = ctx.message.content.split(" ", 2)
+        colorSelection = text.lower()
         user = ctx.message.author
         guild = ctx.guild
         if len(colorSelection) == 1:

@@ -30,6 +30,7 @@ class admin(commands.Cog):
         with open("prefs.json", "w") as fp:
             json.dump(prefsDict, fp, indent=4)
         await ctx.send("Prefix was set as {}".format(prefsDict["commandPrefix"]))
+
         # Set the playing message to use the new prefix
         await self.bot.change_presence(
             activity=discord.Game(name="{}help".format(prefsDict["commandPrefix"]))
@@ -37,36 +38,27 @@ class admin(commands.Cog):
 
     @commands.command()
     @commands.has_any_role("Admin")
-    async def setname(self, ctx):
+    @commands.cooldown(1, 30, commands.BucketType.default)
+    async def setname(self, ctx, *, name: str = None):
         """Set the bots nickname"""
-        t = ctx.message.content.split(" ", 1)
-        if len(t) == 1:
-            await self.bot.edit_profile(username=None)
-        else:
-            name = t[1]
-            await self.bot.edit_profile(username=name)
+        await ctx.guild.me.edit(nick=name)
 
     @commands.command()
     @commands.has_any_role("Admin")
-    @commands.cooldown(1, 30, commands.BucketType.default)
-    async def setavatar(self, ctx):
+    @commands.cooldown(1, 10, commands.BucketType.default)
+    async def setavatar(self, ctx, link: str):
         """Set the bots avatar"""
-        t = ctx.message.content.split(" ", 1)
-        if len(t) == 1:
-            await ctx.send("Please use a valid image link! It must be .jpg or .png")
-        else:
-            try:
-                link = t[1]
-                async with aiohttp.ClientSession() as session:
-                    async with session.get(link) as img:
-                        with open("avatar.png", "wb") as f:
-                            f.write(await img.read())
-                with open("avatar.png", "rb") as f:
-                    await self.bot.edit_profile(avatar=f.read())
-                os.remove("avatar.png")
-                await ctx.send("New avatar set!")
-            except Exception as e:
-                await ctx.send(str(e))
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.get(link) as img:
+                    with open("avatar.png", "wb") as f:
+                        f.write(await img.read())
+            with open("avatar.png", "rb") as f:
+                await self.bot.user.edit(avatar=f.read())
+            os.remove("avatar.png")
+            await ctx.send("New avatar set!")
+        except Exception as e:
+            await ctx.send(str(e))
 
 
 def setup(bot):
