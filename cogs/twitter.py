@@ -48,7 +48,7 @@ class twitter(commands.Cog):
 
     async def check_tweets(self):
         """Check Tweets"""
-        while not self.bot.is_closed:
+        while not self.bot.is_closed():
             tweets = json.load(open("tweets.json"))
             if len(tweets) > 0:
                 followingList = json.load(open("followinglist.json"))
