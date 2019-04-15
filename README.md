@@ -1,5 +1,5 @@
 # DiscordBot
-A Discord bot made in Python using discord.py. It is not intended to manage multiple servers at once just yet.
+A Discord bot made in Python using discord.py. It is not intended to manage multiple servers at once just yet. Requirements.txt is generated using [pipreqs](https://github.com/bndr/pipreqs).
 
 ## Requirements
 - Python 3.6.7
