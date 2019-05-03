@@ -1,11 +1,25 @@
 # DiscordBot
-A Discord bot made in Python using discord.py. It is not intended to manage multiple servers at once just yet. Requirements.txt is generated using [pipreqs](https://github.com/bndr/pipreqs).
+A Discord bot made in Python using discord.py. 
 
-## Requirements
-- Python 3.6.7
-- [discord.py 1.0.0](https://github.com/Rapptz/discord.py)
-- [tweepy 3.7.0](https://github.com/tweepy/tweepy)
-- [requests 2.21.0](https://github.com/kennethreitz/requests)
+requirements.txt is generated using [pipreqs](https://github.com/bndr/pipreqs).
+
+## To-Do
+A non exhaustive list of features or functionality that I'd like to add some time in the future.
+- Search
+  - YouTube
+  - Reddit
+  - Imgur
+- Overwatch/Fortnite/Apex/etc stats lookup
+- YouTube notifications
+- TwitchTV notifications
+- Warframe notifications
+- Polls
+- Suggestions with Trello integration
+- Trivia
+- Music (I'll probably seperate this to a different bot if it gets too big)
+- Moderation tools including blacklist
+- Support for multiple servers
+- General clean up and restructuring 
 
 ## Issues
 - An apparent websockets bug can cause the following issue. This may explain issues with Twitter streaming but it does not interfere with any other aspect of the bot.
