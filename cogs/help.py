@@ -68,6 +68,9 @@ class help(commands.Cog):
         embedMessage.add_field(
             name="eightball", value="Ask the eightball a question", inline=False
         )
+        embedMessage.add_field(
+            name="joke", value="The bot will tell you a joke", inline=False
+        )
         embedMessage.add_field(name="flip", value="Flip a coin", inline=False)
         embedMessage.add_field(
             name="roll", value="Roll a dice (d4, d6, d8, d10, d12, d20)", inline=False

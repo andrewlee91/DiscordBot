@@ -1,5 +1,6 @@
 import logging
 import random
+import requests
 
 import discord
 from discord.ext import commands
@@ -12,6 +13,12 @@ class basic(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
+
+    @commands.command()
+    async def joke(self, ctx):
+        req = requests.get("https://official-joke-api.appspot.com/random_joke")
+        joke = req.json()
+        await ctx.send("{}\n\n{}".format(joke["setup"], joke["punchline"]))
 
     @commands.command()
     async def say(self, ctx, *, text: str):
