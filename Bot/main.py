@@ -26,7 +26,8 @@ bot = commands.Bot(command_prefix=prefsDict["commandPrefix"], help_command=None)
 @bot.event
 async def on_ready():
     # Get the list of cogs available and check if unwanted files are still lingering
-    cogsList = os.listdir("cogs")
+    bot_directory = os.path.dirname(os.path.realpath(__file__))
+    cogsList = os.listdir("{}/cogs".format(bot_directory))
     if "utils" in cogsList:
         cogsList.remove("utils")
     if "__pycache__" in cogsList:
