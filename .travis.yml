@@ -3,5 +3,7 @@ python:
   - "3.6"
 install:
   - pip install -r requirements.txt
+before_script: 
+  - cd Bot
 script:
-  - python bot/main.py 
+  - python main.py 
