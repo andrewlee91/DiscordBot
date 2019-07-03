@@ -51,6 +51,12 @@ async def on_ready():
 
 @bot.event
 async def on_message(message):
+    with open("blacklist.txt") as blacklist:
+        if message.content in blacklist.read():
+            author = message.author.id
+            await message.channel.send("<@{}> that's a bad word".format(author))
+            await message.delete()
+
     await bot.process_commands(message)
 
 
