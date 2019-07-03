@@ -8,7 +8,7 @@ from discord.ext import commands
 
 logger = logging.getLogger(__name__)
 
-bot_directory = "{}/bot".format(os.getcwd())
+bot_directory = "{}/Bot".format(os.getcwd())
 
 config = configparser.ConfigParser()
 
