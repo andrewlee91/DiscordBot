@@ -1,17 +1,21 @@
-import json
+import configparser
 import logging
 import os
 
 import discord
 from discord.ext import commands
 
-# prefs.json is used to store things like the command prefix and any channel ids
-try:
-    prefsDict = json.load(open("prefs.json"))
-except Exception as e:
-    prefsDict = {"commandPrefix": "f!"}
-    with open("prefs.json", "w") as outfile:
-        json.dump(prefsDict, outfile)
+bot_directory = os.path.dirname(os.path.realpath(__file__))
+
+config = configparser.ConfigParser()
+
+if os.path.isfile("{}/config.ini".format(bot_directory)):
+    config.read("{}/config.ini".format(bot_directory))
+else:
+    config["DEFAULT"] = {"prefix": "f!", "isBlacklistEnabled": "true"}
+
+    with open("{}/config.ini".format(bot_directory), "w") as config_file:
+        config.write(config_file)
 
 logging.basicConfig(
     filename="error.log",
@@ -20,13 +24,12 @@ logging.basicConfig(
     datefmt="%d-%b-%y %H:%M:%S",
 )
 
-bot = commands.Bot(command_prefix=prefsDict["commandPrefix"], help_command=None)
+bot = commands.Bot(command_prefix=config["DEFAULT"]["prefix"], help_command=None)
 
 
 @bot.event
 async def on_ready():
     # Get the list of cogs available and check if unwanted files are still lingering
-    bot_directory = os.path.dirname(os.path.realpath(__file__))
     cogsList = os.listdir("{}/cogs".format(bot_directory))
     if "utils" in cogsList:
         cogsList.remove("utils")
@@ -43,7 +46,7 @@ async def on_ready():
             logging.error(str(e))
     # Set the bots playing message to show use of the prefix
     await bot.change_presence(
-        activity=discord.Game(name="{}help".format(prefsDict["commandPrefix"]))
+        activity=discord.Game(name="{}help".format(config["DEFAULT"]["prefix"]))
     )
 
     print("{} has started using version {}".format(bot.user.name, discord.__version__))
@@ -51,11 +54,12 @@ async def on_ready():
 
 @bot.event
 async def on_message(message):
-    with open("blacklist.txt") as blacklist:
-        if message.content in blacklist.read():
-            author = message.author.id
-            await message.channel.send("<@{}> that's a bad word".format(author))
-            await message.delete()
+    if config["DEFAULT"]["isBlacklistEnabled"] == "true":
+        with open("blacklist.txt") as blacklist:
+            if message.content in blacklist.read():
+                author = message.author.id
+                await message.channel.send("<@{}> that's a bad word".format(author))
+                await message.delete()
 
     await bot.process_commands(message)
 

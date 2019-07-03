@@ -1,12 +1,16 @@
-import json
+import configparser
 import logging
 import os
-import aiohttp
 
+import aiohttp
 import discord
 from discord.ext import commands
 
 logger = logging.getLogger(__name__)
+
+bot_directory = "{}/bot".format(os.getcwd())
+
+config = configparser.ConfigParser()
 
 
 class admin(commands.Cog):
@@ -25,15 +29,15 @@ class admin(commands.Cog):
 
         # Set the new prefix with the bot then save to to prefs.json
         self.bot.command_prefix = prefix
-        prefsDict = json.load(open("prefs.json"))
-        prefsDict["commandPrefix"] = prefix
-        with open("prefs.json", "w") as fp:
-            json.dump(prefsDict, fp, indent=4)
-        await ctx.send("Prefix was set as {}".format(prefsDict["commandPrefix"]))
+        config.read("{}/config.ini".format(bot_directory))
+        config["DEFAULT"]["prefix"] = prefix
+        with open("{}/config.ini".format(bot_directory), "w") as config_file:
+            config.write(config_file)
+        await ctx.send("Prefix was set as {}".format(config["DEFAULT"]["prefix"]))
 
         # Set the playing message to use the new prefix
         await self.bot.change_presence(
-            activity=discord.Game(name="{}help".format(prefsDict["commandPrefix"]))
+            activity=discord.Game(name="{}help".format(config["DEFAULT"]["prefix"]))
         )
 
     @commands.command()
