@@ -12,7 +12,7 @@ config = configparser.ConfigParser()
 if os.path.isfile("{}/config.ini".format(bot_directory)):
     config.read("{}/config.ini".format(bot_directory))
 else:
-    config["DEFAULT"] = {"prefix": "f!", "isBlacklistEnabled": "true"}
+    config["DEFAULT"] = {"prefix": "f!", "isBlacklistEnabled": True}
 
     with open("{}/config.ini".format(bot_directory), "w") as config_file:
         config.write(config_file)
@@ -54,7 +54,10 @@ async def on_ready():
 
 @bot.event
 async def on_message(message):
-    if config["DEFAULT"]["isBlacklistEnabled"] == "true":
+    config.read("{}/config.ini".format(bot_directory))
+    is_blacklist_enabled = config.getboolean("DEFAULT", "isBlacklistEnabled")
+
+    if is_blacklist_enabled:
         with open("blacklist.txt") as blacklist:
             if message.content in blacklist.read():
                 author = message.author.id

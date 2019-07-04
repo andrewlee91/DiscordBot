@@ -64,6 +64,22 @@ class admin(commands.Cog):
         except Exception as e:
             await ctx.send(str(e))
 
+    @commands.command()
+    @commands.has_any_role("Admin")
+    async def toggleblacklist(self, ctx):
+        """Toggle the blacklist on and off"""
+        config.read("{}/config.ini".format(bot_directory))
+        is_blacklist_enabled = config.getboolean("DEFAULT", "isBlacklistEnabled")
+        if is_blacklist_enabled:
+            config["DEFAULT"]["isBlacklistEnabled"] = "False"
+            await ctx.send("Blacklist is now disabled")
+        else:
+            config["DEFAULT"]["isBlacklistEnabled"] = "True"
+            await ctx.send("Blacklist is now enabled")
+
+        with open("{}/config.ini".format(bot_directory), "w") as config_file:
+            config.write(config_file)
+
 
 def setup(bot):
     bot.add_cog(admin(bot))
