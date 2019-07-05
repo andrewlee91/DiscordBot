@@ -18,7 +18,7 @@ else:
         config.write(config_file)
 
 logging.basicConfig(
-    filename="error.log",
+    filename="{}/error.log".format(bot_directory),
     filemode="a",
     format="%(asctime)s - %(message)s",
     datefmt="%d-%b-%y %H:%M:%S",
@@ -92,7 +92,7 @@ async def unload(ctx, cog: str):
 
 
 @bot.event
-async def on_command_error(error, ctx):
+async def on_command_error(ctx, error):
     """Command errors"""
     if isinstance(error, commands.CommandOnCooldown):
         await ctx.send(
@@ -100,8 +100,8 @@ async def on_command_error(error, ctx):
                 error.retry_after
             )
         )
-
-    logging.error(error)
+    else:
+        logging.error(error)
 
 
 bot.run(os.environ["DISCORD_TOKEN"])
