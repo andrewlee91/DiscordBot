@@ -1,4 +1,5 @@
 import logging
+import random
 
 import discord
 import requests
@@ -23,7 +24,11 @@ class pokemon(commands.Cog):
 
         name = data["name"].capitalize()
         pokemon_id = data["id"]
-        thumbnail = data["sprites"]["front_default"]
+        rand = random.randint(0, 450)
+        if rand == 450:
+            thumbnail = data["sprites"]["front_shiny"]
+        else:
+            thumbnail = data["sprites"]["front_default"]
 
         for temp in species_data["flavor_text_entries"]:
             if temp["language"]["name"] == "en":
