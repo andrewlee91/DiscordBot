@@ -12,6 +12,10 @@ A non exhaustive list of features or functionality that I'd like to add some tim
   - YouTube
   - Reddit
   - Imgur
+- Pokemon
+  - Berries
+  - Items
+  - Moves
 - Overwatch/Fortnite/Apex/etc stats lookup
 - YouTube notifications
 - TwitchTV notifications
