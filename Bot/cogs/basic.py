@@ -16,9 +16,17 @@ class basic(commands.Cog):
 
     @commands.command()
     async def joke(self, ctx):
+        """Get a joke from the joke api"""
         req = requests.get("https://official-joke-api.appspot.com/random_joke")
         joke = req.json()
         await ctx.send("{}\n\n{}".format(joke["setup"], joke["punchline"]))
+
+    @commands.command()
+    async def ron(self, ctx):
+        """Get a Ron Swanson quote"""
+        req = requests.get("https://ron-swanson-quotes.herokuapp.com/v2/quotes")
+        quote = req.json()
+        await ctx.send(quote[0])
 
     @commands.command()
     async def say(self, ctx, *, text: str):
