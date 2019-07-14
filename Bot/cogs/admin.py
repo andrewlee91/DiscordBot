@@ -69,12 +69,12 @@ class admin(commands.Cog):
     async def toggleblacklist(self, ctx):
         """Toggle the blacklist on and off"""
         config.read("{}/config.ini".format(bot_directory))
-        is_blacklist_enabled = config.getboolean("DEFAULT", "isBlacklistEnabled")
+        is_blacklist_enabled = config.getboolean("MODERATION", "blacklistenabled")
         if is_blacklist_enabled:
-            config["DEFAULT"]["isBlacklistEnabled"] = "False"
+            config["MODERATION"]["blacklistenabled"] = "False"
             await ctx.send("Blacklist is now disabled")
         else:
-            config["DEFAULT"]["isBlacklistEnabled"] = "True"
+            config["MODERATION"]["blacklistenabled"] = "True"
             await ctx.send("Blacklist is now enabled")
 
         with open("{}/config.ini".format(bot_directory), "w") as config_file:

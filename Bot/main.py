@@ -5,6 +5,7 @@ from datetime import datetime
 
 import discord
 from discord.ext import commands
+from profanity_check import predict, predict_prob
 
 bot_directory = os.path.dirname(os.path.realpath(__file__))
 config = configparser.ConfigParser()
@@ -22,17 +23,15 @@ def Load_Config():
     if os.path.isfile(config_path):
         config.read(config_path)
     else:
-        config["DEFAULT"] = {
-            "prefix": "f!",
-            "isblacklistenabled": True,
-            "islogenabled": True,
-        }
+        config["DEFAULT"] = {"prefix": "f!"}
+
+        config["MODERATION"] = {"blacklistenabled": True, "logenabled": True}
 
         with open(config_path, "w") as config_file:
             config.write(config_file)
 
 
-def Log_Message(message):
+def Log_Message(author, author_id, message_content):
     date = datetime.now().strftime("%d-%b-%y")
     time = datetime.now().strftime("%H:%M:%S")
     log_directory = "{}/logs/{}.txt".format(bot_directory, date)
@@ -40,19 +39,19 @@ def Log_Message(message):
         log_file.write(
             "{time} - {author} (id: {author_id}) - {message}\n".format(
                 time=time,
-                author=message.author,
-                author_id=message.author.id,
-                message=message.content,
+                author=author,
+                author_id=author_id,
+                message=message_content.encode("utf-8"),
             )
         )
 
 
-def Is_Word_In_Blacklist(message):
-    with open("{}/blacklist.txt".format(bot_directory)) as blacklist:
-        for word in blacklist:
-            if message.content.lower().find(word):
-                return True
-        return False
+def Word_In_Blacklist(message):
+    # Profanity-check requires a list in order to do it's thing
+    Temp = [message]
+    if predict(Temp):
+        return True
+    return False
 
 
 Load_Config()
@@ -93,20 +92,54 @@ async def on_ready():
 
 @bot.event
 async def on_message(message):
-    config.read(config_path)
-    is_blacklist_enabled = config.getboolean("DEFAULT", "isblacklistenabled")
-    is_log_enabled = config.getboolean("DEFAULT", "islogenabled")
-
-    is_message_blacklisted = False
+    Load_Config()
+    blacklist_enabled = config.getboolean("MODERATION", "blacklistenabled")
+    log_enabled = config.getboolean("MODERATION", "logenabled")
+    message_blacklisted = False
 
     # Log before we check for blacklist so we catch anyone being bad 🙂
-    if is_log_enabled:
-        Log_Message(message)
+    if log_enabled:
+        Log_Message(message.author, message.author.id, message.content)
 
-    # Removed blacklist code because it was deleting every message
+    if (
+        blacklist_enabled
+        and not message.author.bot
+        and not message.content.startswith(config["DEFAULT"]["prefix"])
+        and Word_In_Blacklist(message.content)
+    ):
+        author = message.author.id
+        await message.channel.send("<@{}> that's a bad word 😔".format(author))
+        await message.delete()
+        message_blacklisted = True
 
-    if not is_message_blacklisted and not message.author.bot:
+    if not message_blacklisted and not message.author.bot:
         await bot.process_commands(message)
+
+
+@bot.event
+async def on_member_join(member):
+    Load_Config()
+    log_enabled = config.getboolean("MODERATION", "logenabled")
+
+    if log_enabled:
+        Log_Message(
+            bot.user.name,
+            "BOT",
+            "{} ({}) joined the server".format(member.name, member.id),
+        )
+
+
+@bot.event
+async def on_member_remove(member):
+    Load_Config()
+    log_enabled = config.getboolean("MODERATION", "logenabled")
+
+    if log_enabled:
+        Log_Message(
+            bot.user.name,
+            "BOT",
+            "{} ({}) left the server".format(member.name, member.id),
+        )
 
 
 @bot.command(hidden=True)
