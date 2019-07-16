@@ -114,8 +114,7 @@ dmypy.json
 .pyre/
 
 .vscode
+.logs
 
-reminders.json
-followinglist.json
-tweets.json
-blacklist.txt
+*.json
+

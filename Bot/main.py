@@ -97,7 +97,7 @@ async def on_message(message):
     log_enabled = config.getboolean("MODERATION", "logenabled")
     message_blacklisted = False
 
-    # Log before we check for blacklist so we catch anyone being bad 🙂
+    # Log before we check for blacklist so we catch anyone being bad
     if log_enabled:
         Log_Message(message.author, message.author.id, message.content)
 

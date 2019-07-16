@@ -10,8 +10,6 @@ A non exhaustive list of features or functionality that I'd like to add some tim
   - Fortnite item shop updates
   - Migrate Osu commands to this cog
 - Moderation tools
-  - Chat log
-  - Blacklist
   - Auto greet
   - Auto role
 - Music (I'll probably seperate this into a different bot if it gets too big)

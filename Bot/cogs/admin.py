@@ -69,13 +69,29 @@ class admin(commands.Cog):
     async def toggleblacklist(self, ctx):
         """Toggle the blacklist on and off"""
         config.read("{}/config.ini".format(bot_directory))
-        is_blacklist_enabled = config.getboolean("MODERATION", "blacklistenabled")
-        if is_blacklist_enabled:
+        blacklist_enabled = config.getboolean("MODERATION", "blacklistenabled")
+        if blacklist_enabled:
             config["MODERATION"]["blacklistenabled"] = "False"
             await ctx.send("Blacklist is now disabled")
         else:
             config["MODERATION"]["blacklistenabled"] = "True"
             await ctx.send("Blacklist is now enabled")
+
+        with open("{}/config.ini".format(bot_directory), "w") as config_file:
+            config.write(config_file)
+
+    @commands.command()
+    @commands.has_any_role("Admin")
+    async def togglelog(self, ctx):
+        """Toggle the chat logs on and off"""
+        config.read("{}/config.ini".format(bot_directory))
+        log_enabled = config.getboolean("MODERATION", "logenabled")
+        if log_enabled:
+            config["MODERATION"]["logenabled"] = "False"
+            await ctx.send("Chat logs are now disabled")
+        else:
+            config["MODERATION"]["logenabled"] = "True"
+            await ctx.send("Chat logs now enabled")
 
         with open("{}/config.ini".format(bot_directory), "w") as config_file:
             config.write(config_file)
