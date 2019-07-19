@@ -5,7 +5,7 @@ import logging
 import discord
 from discord.ext import commands
 
-from cogs.utils import twitterstreamer
+from utils import twitterstreamer
 
 logger = logging.getLogger(__name__)
 
