@@ -96,6 +96,22 @@ class admin(commands.Cog):
         with open("{}/config.ini".format(bot_directory), "w") as config_file:
             config.write(config_file)
 
+    @commands.command()
+    @commands.has_any_role("Admin")
+    async def toggleautogreet(self, ctx):
+        """Toggle autogreet on and off"""
+        config.read("{}/config.ini".format(bot_directory))
+        autogreet_enabled = config.getboolean("DEFAULT", "autogreet")
+        if autogreet_enabled:
+            config["DEFAULT"]["autogreet"] = "False"
+            await ctx.send("Autogreet is now disabled")
+        else:
+            config["DEFAULT"]["autogreet"] = "True"
+            await ctx.send("Autogreet is now enabled")
+
+        with open("{}/config.ini".format(bot_directory), "w") as config_file:
+            config.write(config_file)
+
 
 def setup(bot):
     bot.add_cog(admin(bot))

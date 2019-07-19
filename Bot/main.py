@@ -23,7 +23,7 @@ def Load_Config():
     if os.path.isfile(config_path):
         config.read(config_path)
     else:
-        config["DEFAULT"] = {"prefix": "f!"}
+        config["DEFAULT"] = {"prefix": "f!", "autogreet": True}
 
         config["MODERATION"] = {"blacklistenabled": True, "logenabled": True}
 
@@ -119,6 +119,7 @@ async def on_message(message):
 @bot.event
 async def on_member_join(member):
     Load_Config()
+    autogreet_enabled = config.getboolean("DEFAULT", "autogreet")
     log_enabled = config.getboolean("MODERATION", "logenabled")
 
     if log_enabled:
@@ -127,6 +128,9 @@ async def on_member_join(member):
             "BOT",
             "{} ({}) joined the server".format(member.name, member.id),
         )
+
+    if not member.bot and autogreet_enabled:
+        await member.send("Thanks for joining! :)")
 
 
 @bot.event
