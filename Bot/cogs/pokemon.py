@@ -106,7 +106,7 @@ class pokemon(commands.Cog):
             temp.append(t["name"].capitalize())
         half_damage_to = ", ".join(temp)
 
-        if data["damage_relations"]["no_damage_from"]:#
+        if data["damage_relations"]["no_damage_from"]:
             temp = []
             for t in data["damage_relations"]["no_damage_from"]:
                 temp.append(t["name"].capitalize())
