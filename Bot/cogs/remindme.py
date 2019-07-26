@@ -1,12 +1,16 @@
 import asyncio
 import json
 import logging
+import os
 import time
 
 import discord
 from discord.ext import commands
 
 logger = logging.getLogger(__name__)
+
+data_directory = "{}/Bot/data".format(os.getcwd())
+reminders_path = "{}/reminders.json".format(data_directory)
 
 # Time conversions to seconds, includes variations for plurals
 timeConversions = {
@@ -28,11 +32,14 @@ class remindme(commands.Cog):
         self.bot = bot
 
         # Check files
-        try:
-            remindersList = json.load(open("reminders.json"))
-        except:
+        if not os.path.isdir(data_directory):
+            os.makedirs(data_directory)
+
+        if os.path.isfile(reminders_path):
+            remindersList = json.load(open(reminders_path))
+        else:
             remindersList = {}
-            with open("reminders.json", "w") as outfile:
+            with open(reminders_path, "w") as outfile:
                 json.dump(remindersList, outfile)
 
         self.reminders_check = bot.loop.create_task(self.check_reminders())
@@ -61,10 +68,10 @@ class remindme(commands.Cog):
         channelID = ctx.message.channel.id
 
         # Save the reminder
-        remindersList = json.load(open("reminders.json"))
+        remindersList = json.load(open(reminders_path))
         remindersList[remindTime] = [text, userID, channelID]
 
-        with open("reminders.json", "w") as outfile:
+        with open(reminders_path, "w") as outfile:
             json.dump(remindersList, outfile)
 
         await ctx.send("I'll remind you '{}' in {} {}".format(text, length, unit))
@@ -72,7 +79,7 @@ class remindme(commands.Cog):
     async def check_reminders(self):
         """Check Reminders"""
         while not self.bot.is_closed():
-            remindersList = json.load(open("reminders.json"))
+            remindersList = json.load(open(reminders_path))
             if len(remindersList) > 0:
                 tempDictionary = dict(remindersList)
                 for reminder in remindersList:
@@ -86,7 +93,7 @@ class remindme(commands.Cog):
                         channel = self.bot.get_channel(channelID)
                         await channel.send(reminderMessage)
                         del tempDictionary[reminder]
-                with open("reminders.json", "w") as outfile:
+                with open(reminders_path, "w") as outfile:
                     json.dump(tempDictionary, outfile)
             await asyncio.sleep(5)
 
