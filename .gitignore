@@ -115,6 +115,4 @@ dmypy.json
 
 .vscode
 Bot/logs
-
-*.json
-
+Bot/data
