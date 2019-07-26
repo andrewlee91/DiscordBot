@@ -66,8 +66,6 @@ async def on_ready():
 
     # Get the list of cogs available and check if unwanted files are still lingering
     cogsList = os.listdir("{}/cogs".format(bot_directory))
-    if "utils" in cogsList:
-        cogsList.remove("utils")
 
     # Try to load the cogs
     for cog in cogsList:

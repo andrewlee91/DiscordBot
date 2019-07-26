@@ -3,26 +3,15 @@ import logging
 import os
 
 import tweepy
-from tweepy.streaming import StreamListener
-from tweepy import OAuthHandler
-from tweepy import Stream
-from tweepy import api
-
+from tweepy import OAuthHandler, Stream, api
 from tweepy.models import Status
+from tweepy.streaming import StreamListener
 
 logger = logging.getLogger(__name__)
 
-consumerKey = os.environ["TWITTER_CONSUMER_KEY"]
-consumerSecret = os.environ["TWITTER_CONSUMER_SECRET"]
-accessToken = os.environ["TWITTER_ACCESS_TOKEN"]
-accessTokenSecret = os.environ["TWITTER_ACCESS_TOKEN_SECRET"]
-
-auth = OAuthHandler(consumerKey, consumerSecret)
-auth.set_access_token(accessToken, accessTokenSecret)
-
-api = tweepy.API(auth)
-
-followingList = json.load(open("followinglist.json"))
+data_directory = "{}/Bot/data".format(os.getcwd())
+tweets_path = "{}/tweets.json".format(data_directory)
+followinglist_path = "{}/followinglist.json".format(data_directory)
 
 
 class TwitterStreamer(StreamListener):
@@ -45,14 +34,14 @@ class TwitterStreamer(StreamListener):
 
                 # Save the tweet to json along with the screen name so we can identify information for posting the tweet to the correct channel
                 try:
-                    tweets = json.load(open("tweets.json"))
+                    tweets = json.load(open(tweets_path))
                     tweets[status.id] = [status.user.screen_name.lower(), tweetURL]
-                    with open("tweets.json", "w") as outfile:
+                    with open(tweets_path, "w") as outfile:
                         json.dump(tweets, outfile)
                 except:
                     tweets = {}
                     tweets[status.id] = [status.user.screen_name.lower(), tweetURL]
-                    with open("tweets.json", "w") as outfile:
+                    with open(tweets_path, "w") as outfile:
                         json.dump(tweets, outfile)
 
         return True
@@ -65,31 +54,61 @@ class TwitterStreamer(StreamListener):
             return False
 
 
-def FollowUser(username: str, channelID: int):
+consumerKey = os.environ["TWITTER_CONSUMER_KEY"]
+consumerSecret = os.environ["TWITTER_CONSUMER_SECRET"]
+accessToken = os.environ["TWITTER_ACCESS_TOKEN"]
+accessTokenSecret = os.environ["TWITTER_ACCESS_TOKEN_SECRET"]
+
+auth = OAuthHandler(consumerKey, consumerSecret)
+auth.set_access_token(accessToken, accessTokenSecret)
+
+api = tweepy.API(auth)
+
+followingList = {}
+
+l = TwitterStreamer()
+stream = Stream(auth, l)
+
+
+def Setup_Files():
+    if not os.path.isdir(data_directory):
+        os.makedirs(data_directory)
+
+    if os.path.isfile(followinglist_path):
+        followingList = json.load(open(followinglist_path))
+    else:
+        followingList = {}
+        with open(followinglist_path, "w") as outfile:
+            json.dump(followingList, outfile)
+
+    if os.path.isfile(tweets_path):
+        tweets = json.load(open(tweets_path))
+    else:
+        tweets = {}
+        with open(tweets_path, "w") as outfile:
+            json.dump(tweets, outfile)
+
+
+def Follow_User(username: str, channelID: int):
     try:
         stream.disconnect()
-        twitterID = ConvertUsernameToID(username)
+        twitterID = Convert_Username_To_ID(username)
 
         if twitterID is None:
             return "Cannot find the user: {}".format(username)
 
         followingList[username.lower()] = [twitterID, channelID]
-        with open("followinglist.json", "w") as outfile:
+        with open(followinglist_path, "w") as outfile:
             json.dump(followingList, outfile)
 
-        idList = ""
-        for i in followingList:
-            idList += str(followingList[i][0])
-            idList += ", "
-
-        stream.filter(follow=[idList], is_async=True)
+        Start_Streamer()
         return "Started following {}".format(username)
     except Exception as e:
         logging.error(str(e))
         return str(e)
 
 
-def UnfollowUser(username: str):
+def Unfollow_User(username: str):
     try:
         if username not in followingList:
             return "You are not following {}".format(username)
@@ -99,34 +118,31 @@ def UnfollowUser(username: str):
         tempList = followingList
         del tempList[username]
 
-        with open("followinglist.json", "w") as outfile:
+        with open(followinglist_path, "w") as outfile:
             json.dump(tempList, outfile)
 
-        idList = ""
-        for i in followingList:
-            idList += str(followingList[i][0])
-            idList += ", "
-
-        stream.filter(follow=[idList], is_async=True)
+        Start_Streamer()
         return "Unfollowed {}".format(username)
     except Exception as e:
         logging.error(str(e))
         return str(e)
 
 
-def ConvertUsernameToID(username: str):
+def Convert_Username_To_ID(username: str):
     user = api.get_user(screen_name=username)
     return user.id
 
 
-idList = ""
-for i in followingList:
-    idList += str(followingList[i][0]) + ", "
+def Start_Streamer():
+    if not followingList:
+        print("Following list is empty")
+    else:
+        idList = ""
+        for i in followingList:
+            idList += str(followingList[i][0]) + ", "
 
-l = TwitterStreamer()
+        stream.filter(follow=[idList], is_async=True)
 
-stream = Stream(auth, l)
-stream.filter(follow=[idList], is_async=True)
 
 # https://developer.twitter.com/en/docs/basics/response-codes.html
 def errorCodes(x):
