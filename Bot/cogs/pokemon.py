@@ -160,6 +160,48 @@ class pokemon(commands.Cog):
 
         await ctx.send(embed=embedMessage)
 
+    @pokemon.command()
+    async def berry(self, ctx, text: str):
+        """Search for a Pokemon berry"""
+        req = requests.get("https://pokeapi.co/api/v2/berry/{}".format(text.lower()))
+        data = req.json()
+
+        name = data["name"].capitalize()
+        growth_time = data["growth_time"]
+        max_harvest = data["max_harvest"]
+        item_name = data["item"]["name"]
+
+        description = "For in depth details search for item: {}".format(item_name)
+
+        embedMessage = discord.Embed(title=description, colour=0x87CEEB)
+        embedMessage.add_field(name="Growth Time", value=growth_time, inline=True)
+        embedMessage.add_field(name="Max Harvest", value=max_harvest, inline=True)
+        embedMessage.set_author(name=name)
+
+        embedMessage.set_footer(text="All data from https://pokeapi.co/")
+
+        await ctx.send(embed=embedMessage)
+
+    @pokemon.command()
+    async def item(self, ctx, text: str):
+        """Search for a Pokemon berry"""
+        req = requests.get("https://pokeapi.co/api/v2/item/{}".format(text.lower()))
+        data = req.json()
+
+        name = "{} - {}".format(
+            data["name"].capitalize(), data["category"]["name"].capitalize()
+        )
+        thumbnail = data["sprites"]["default"]
+        description = data["effect_entries"][0]["effect"]
+
+        embedMessage = discord.Embed(title=description, colour=0x87CEEB)
+        embedMessage.set_author(name=name)
+        embedMessage.set_thumbnail(url=thumbnail)
+
+        embedMessage.set_footer(text="All data from https://pokeapi.co/")
+
+        await ctx.send(embed=embedMessage)
+
 
 def setup(bot):
     bot.add_cog(pokemon(bot))
