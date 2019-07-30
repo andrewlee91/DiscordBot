@@ -7,10 +7,6 @@ A Discord bot made in Python using [discord.py](https://github.com/Rapptz/discor
 ## To-Do
 A non exhaustive list of features or functionality that I'd like to add some time in the future.
 - Music (I'll probably seperate this into a different bot if it gets too big)
-- Pokemon
-  - Berries
-  - Items
-  - Moves
 - Polls
 - Search
   - YouTube
