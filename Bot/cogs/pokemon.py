@@ -184,7 +184,7 @@ class pokemon(commands.Cog):
 
     @pokemon.command()
     async def item(self, ctx, text: str):
-        """Search for a Pokemon berry"""
+        """Search for a Pokemon item"""
         req = requests.get("https://pokeapi.co/api/v2/item/{}".format(text.lower()))
         data = req.json()
 
@@ -197,6 +197,35 @@ class pokemon(commands.Cog):
         embedMessage = discord.Embed(title=description, colour=0x87CEEB)
         embedMessage.set_author(name=name)
         embedMessage.set_thumbnail(url=thumbnail)
+
+        embedMessage.set_footer(text="All data from https://pokeapi.co/")
+
+        await ctx.send(embed=embedMessage)
+
+    @pokemon.command()
+    async def move(self, ctx, text: str):
+        """Search for a Pokemon move"""
+        req = requests.get("https://pokeapi.co/api/v2/move/{}".format(text.lower()))
+        data = req.json()
+
+        name = data["name"].capitalize()
+        description = data["effect_entries"][0]["effect"]
+        accuracy = data["accuracy"]
+        pp = data["pp"]
+        move_type = data["type"]["name"].capitalize()
+        target = data["target"]["name"].capitalize()
+        effect_chance = data["effect_chance"]
+        power = data["power"]
+
+        embedMessage = discord.Embed(title=description, colour=0x87CEEB)
+        embedMessage.set_author(name=name)
+
+        embedMessage.add_field(name="Power", value=power, inline=True)
+        embedMessage.add_field(name="PP", value=pp, inline=True)
+        embedMessage.add_field(name="Move Type", value=move_type, inline=True)
+        embedMessage.add_field(name="Accuracy", value=accuracy, inline=True)
+        embedMessage.add_field(name="Target", value=target, inline=True)
+        embedMessage.add_field(name="Effect Chance", value=effect_chance, inline=True)
 
         embedMessage.set_footer(text="All data from https://pokeapi.co/")
 
