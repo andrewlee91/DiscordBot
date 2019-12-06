@@ -23,17 +23,3 @@ This was mostly intended to be an introduction project to Python while also maki
    - TWITTER_ACCESS_TOKEN
    - TWITTER_ACCESS_TOKEN_SECRET
 4. Run main.py
-
-## To-Do
-A non exhaustive list of features or functionality that I'd like to add some time in the future.
-- Music (I'll probably seperate this into a different bot if it gets too big)
-- Polls
-- Search
-  - YouTube
-  - Reddit
-  - Imgur
-- Trivia ([opentdb](https://opentdb.com/))
-- TwitchTV notifications
-- Warframe notifications
-- YouTube notifications
-- Support for multiple servers
